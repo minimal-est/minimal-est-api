@@ -1,4 +1,4 @@
-package kr.minimalest.api.common.web;
+package kr.minimalest.api.web;
 
 public record ErrorResponse (
         Status status,
