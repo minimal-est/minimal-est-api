@@ -6,10 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.minimalest.api.application.JwtExpiration;
-import kr.minimalest.api.application.JwtPayload;
-import kr.minimalest.api.application.JwtProvider;
-import kr.minimalest.api.application.JwtToken;
+import kr.minimalest.api.application.auth.JwtTokenPayload;
+import kr.minimalest.api.application.auth.JwtProvider;
+import kr.minimalest.api.application.auth.JwtToken;
+import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
 import kr.minimalest.api.domain.user.RoleType;
 import kr.minimalest.api.domain.user.UserUUID;
 import org.springframework.stereotype.Component;
@@ -35,12 +35,12 @@ public class SimpleJwtProvider implements JwtProvider {
     }
 
     @Override
-    public JwtPayload verify(JwtToken jwtToken) {
+    public JwtTokenPayload verify(JwtToken jwtToken) {
         DecodedJWT decodedJWT = verifier.verify(jwtToken.value());
         return serializeToJwtPayloadFrom(decodedJWT);
     }
 
-    private JwtPayload serializeToJwtPayloadFrom(DecodedJWT decodedJWT) {
+    private JwtTokenPayload serializeToJwtPayloadFrom(DecodedJWT decodedJWT) {
         try {
             UserUUID userUUID = UserUUID.of(decodedJWT.getSubject());
             List<RoleType> roleTypes = objectMapper.readValue(
@@ -50,7 +50,7 @@ public class SimpleJwtProvider implements JwtProvider {
             );
             Instant issuedAt = decodedJWT.getIssuedAt().toInstant();
             Instant expiresAt = decodedJWT.getExpiresAt().toInstant();
-            return JwtPayload.of(userUUID, roleTypes, issuedAt, expiresAt);
+            return JwtTokenPayload.of(userUUID, roleTypes, issuedAt, expiresAt);
         } catch (Exception e) {
             throw new IllegalStateException("JwtPayload 역직렬화에 실패했습니다!", e);
         }
@@ -58,27 +58,37 @@ public class SimpleJwtProvider implements JwtProvider {
 
     @Override
     public JwtToken generateAccessToken(UserUUID userUUID, List<RoleType> roleTypes) {
-        return generateToken(userUUID, roleTypes, JwtExpiration.ofSeconds(jwtProperties.accessExpiresInSeconds()));
+        return generateToken(userUUID, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.accessValidityInSeconds()));
     }
 
     @Override
     public JwtToken generateRefreshToken(UserUUID userUUID, List<RoleType> roleTypes) {
-        return generateToken(userUUID, roleTypes, JwtExpiration.ofSeconds(jwtProperties.refreshExpiresInSeconds()));
+        return generateToken(userUUID, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.refreshValidityInSeconds()));
     }
 
     @Override
-    public JwtToken generateToken(UserUUID userUUID, List<RoleType> roleTypes, JwtExpiration jwtExpiration) {
+    public JwtToken generateToken(UserUUID userUUID, List<RoleType> roleTypes, JwtTokenValidityInMills jwtTokenValidityInMills) {
         try {
             Instant now = Instant.now();
             return JwtToken.of(JWT.create()
                     .withIssuer(jwtProperties.issuer())
                     .withIssuedAt(Date.from(now))
-                    .withExpiresAt(Date.from(now.plusMillis(jwtExpiration.mills())))
+                    .withExpiresAt(Date.from(now.plusMillis(jwtTokenValidityInMills.value())))
                     .withSubject(userUUID.value())
                     .withClaim(CLAIM_ROLES, objectMapper.writeValueAsString(roleTypes))
                     .sign(algorithm));
         } catch (Exception e) {
             throw new IllegalStateException("토큰을 생성하는 데 실패했습니다!", e);
         }
+    }
+
+    @Override
+    public JwtTokenValidityInMills getAccessValidityInMills() {
+        return JwtTokenValidityInMills.ofSeconds(jwtProperties.accessValidityInSeconds());
+    }
+
+    @Override
+    public JwtTokenValidityInMills getRefreshValidityInMills() {
+        return JwtTokenValidityInMills.ofSeconds(jwtProperties.refreshValidityInSeconds());
     }
 }

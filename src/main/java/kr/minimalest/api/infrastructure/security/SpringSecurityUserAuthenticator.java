@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.application.UserAuthenticator;
+import kr.minimalest.api.application.auth.UserAuthenticator;
 import kr.minimalest.api.application.exception.AuthenticateUserException;
 import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.Password;
