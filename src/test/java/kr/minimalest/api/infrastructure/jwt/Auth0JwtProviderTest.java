@@ -1,8 +1,8 @@
 package kr.minimalest.api.infrastructure.jwt;
 
-import kr.minimalest.api.application.JwtExpiration;
-import kr.minimalest.api.application.JwtPayload;
-import kr.minimalest.api.application.JwtToken;
+import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
+import kr.minimalest.api.application.auth.JwtTokenPayload;
+import kr.minimalest.api.application.auth.JwtToken;
 import kr.minimalest.api.domain.user.RoleType;
 import kr.minimalest.api.domain.user.UserUUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,16 +35,16 @@ class Auth0JwtProviderTest {
         // given
         UserUUID userUUID = UserUUID.of(UUID.randomUUID().toString());
         List<RoleType> roleTypes = List.of(RoleType.USER, RoleType.ADMIN);
-        JwtExpiration expiration = JwtExpiration.ofSeconds(3600);
+        JwtTokenValidityInMills expiration = JwtTokenValidityInMills.ofSeconds(3600);
 
         // when
         JwtToken jwtToken = jwtProvider.generateToken(userUUID, roleTypes, expiration);
-        JwtPayload jwtPayload = jwtProvider.verify(jwtToken);
+        JwtTokenPayload jwtTokenPayload = jwtProvider.verify(jwtToken);
 
         // then
-        assertThat(jwtPayload.userUUID()).isEqualTo(userUUID);
-        assertThat(jwtPayload.roleTypes()).isEqualTo(roleTypes);
-        assertThat(jwtPayload.expiresAt()).isAfter(Instant.now());
-        assertThat(jwtPayload.issuedAt()).isBefore(Instant.now());
+        assertThat(jwtTokenPayload.userUUID()).isEqualTo(userUUID);
+        assertThat(jwtTokenPayload.roleTypes()).isEqualTo(roleTypes);
+        assertThat(jwtTokenPayload.expiresAt()).isAfter(Instant.now());
+        assertThat(jwtTokenPayload.issuedAt()).isBefore(Instant.now());
     }
 }
