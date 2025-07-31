@@ -4,11 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.minimalest.api.application.auth.JwtTokenPayload;
 import kr.minimalest.api.application.auth.JwtProvider;
 import kr.minimalest.api.application.auth.JwtToken;
+import kr.minimalest.api.application.auth.JwtTokenPayload;
 import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
 import kr.minimalest.api.domain.user.RoleType;
 import kr.minimalest.api.domain.user.UserUUID;
@@ -52,11 +51,10 @@ public class SimpleJwtProvider implements JwtProvider {
     private JwtTokenPayload serializeToJwtPayloadFrom(DecodedJWT decodedJWT) {
         try {
             UserUUID userUUID = UserUUID.of(decodedJWT.getSubject());
-            List<RoleType> roleTypes = objectMapper.readValue(
-                    decodedJWT.getClaim(CLAIM_ROLES).asString(),
-                    new TypeReference<List<RoleType>>() {
-                    }
-            );
+            List<String> roleStrings = decodedJWT.getClaim(CLAIM_ROLES).asList(String.class);
+            List<RoleType> roleTypes = roleStrings.stream()
+                    .map(RoleType::valueOf)
+                    .toList();
             Instant issuedAt = decodedJWT.getIssuedAt().toInstant();
             Instant expiresAt = decodedJWT.getExpiresAt().toInstant();
             return JwtTokenPayload.of(userUUID, roleTypes, issuedAt, expiresAt);
@@ -84,7 +82,7 @@ public class SimpleJwtProvider implements JwtProvider {
                     .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(now.plusMillis(jwtTokenValidityInMills.value())))
                     .withSubject(userUUID.value())
-                    .withClaim(CLAIM_ROLES, objectMapper.writeValueAsString(roleTypes))
+                    .withClaim(CLAIM_ROLES, roleTypes.stream().map(Enum::name).toList())
                     .sign(algorithm));
         } catch (Exception e) {
             throw new IllegalStateException("토큰을 생성하는 데 실패했습니다!", e);
