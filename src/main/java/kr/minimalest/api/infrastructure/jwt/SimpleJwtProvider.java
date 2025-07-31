@@ -12,6 +12,7 @@ import kr.minimalest.api.application.auth.JwtToken;
 import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
 import kr.minimalest.api.domain.user.RoleType;
 import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.infrastructure.jwt.exception.JwtTokenVerifyException;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -36,8 +37,16 @@ public class SimpleJwtProvider implements JwtProvider {
 
     @Override
     public JwtTokenPayload verify(JwtToken jwtToken) {
-        DecodedJWT decodedJWT = verifier.verify(jwtToken.value());
+        DecodedJWT decodedJWT = verifyAndGetDecodedJWT(jwtToken);
         return serializeToJwtPayloadFrom(decodedJWT);
+    }
+
+    private DecodedJWT verifyAndGetDecodedJWT(JwtToken jwtToken) {
+        try {
+            return verifier.verify(jwtToken.value());
+        } catch (Exception e) {
+            throw new JwtTokenVerifyException("토큰을 증명하고 해석하는 데 실패했습니다!", e);
+        }
     }
 
     private JwtTokenPayload serializeToJwtPayloadFrom(DecodedJWT decodedJWT) {
