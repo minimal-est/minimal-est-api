@@ -1,5 +1,6 @@
 package kr.minimalest.api.web.exception;
 
+import kr.minimalest.api.application.exception.AuthenticateUserException;
 import kr.minimalest.api.web.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -38,6 +39,32 @@ public class GlobalExceptionHandler {
                 Properties.of("errors", errors)
         );
 
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity
+                .badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(AuthenticateUserException.class)
+    public ResponseEntity<?> handleWebException(AuthenticateUserException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(401),
+                Title.of("사용자 인증 과정 실패"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity
+                .status(401)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<?> handleWebException(UnauthorizedException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(401),
+                Title.of("인증 실패"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity
+                .status(401)
+                .body(errorResponse);
     }
 }
