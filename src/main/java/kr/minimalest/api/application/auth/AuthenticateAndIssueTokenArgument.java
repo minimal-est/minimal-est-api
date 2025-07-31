@@ -2,8 +2,8 @@ package kr.minimalest.api.application.auth;
 
 import org.springframework.util.StringUtils;
 
-public record AuthenticateUserArgument(String email, String rawPassword) {
-    public AuthenticateUserArgument {
+public record AuthenticateAndIssueTokenArgument(String email, String rawPassword) {
+    public AuthenticateAndIssueTokenArgument {
         if (!StringUtils.hasText(email)) {
             throw new IllegalArgumentException("email은 비어있을 수 없습니다!");
         }
@@ -13,7 +13,7 @@ public record AuthenticateUserArgument(String email, String rawPassword) {
         }
     }
 
-    public static AuthenticateUserArgument of(String email, String rawPassword) {
-        return new AuthenticateUserArgument(email, rawPassword);
+    public static AuthenticateAndIssueTokenArgument of(String email, String rawPassword) {
+        return new AuthenticateAndIssueTokenArgument(email, rawPassword);
     }
 }
