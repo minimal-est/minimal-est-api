@@ -63,8 +63,6 @@ public class AuthController {
                 AccessTokenReissueArgument.of(refreshToken)
         );
 
-
-
         return ResponseEntity.ok()
                 .body(AccessTokenResponse.of(issuedAccessTokenResult.accessToken().value()));
     }
