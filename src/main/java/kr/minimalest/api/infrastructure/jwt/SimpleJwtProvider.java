@@ -52,11 +52,18 @@ public class SimpleJwtProvider implements JwtProvider {
         try {
             UserUUID userUUID = UserUUID.of(decodedJWT.getSubject());
             List<String> roleStrings = decodedJWT.getClaim(CLAIM_ROLES).asList(String.class);
+
+            if (roleStrings == null || roleStrings.isEmpty()) {
+                throw new IllegalArgumentException("Roles 클레임이 없습니다!");
+            }
+
             List<RoleType> roleTypes = roleStrings.stream()
                     .map(RoleType::valueOf)
                     .toList();
+
             Instant issuedAt = decodedJWT.getIssuedAt().toInstant();
             Instant expiresAt = decodedJWT.getExpiresAt().toInstant();
+
             return JwtTokenPayload.of(userUUID, roleTypes, issuedAt, expiresAt);
         } catch (Exception e) {
             throw new IllegalStateException("JwtPayload 역직렬화에 실패했습니다!", e);
