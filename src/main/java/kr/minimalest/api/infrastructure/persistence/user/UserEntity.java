@@ -2,10 +2,7 @@ package kr.minimalest.api.infrastructure.persistence.user;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.infrastructure.persistence.role.RoleEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -15,6 +12,7 @@ import java.util.Set;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class UserEntity {
 
     @Id
