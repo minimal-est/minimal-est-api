@@ -1,7 +1,9 @@
 package kr.minimalest.api.web.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.exception.AuthenticateUserException;
 import kr.minimalest.api.web.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,8 +13,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e, HttpServletRequest request) {
+        log.error("예상치 못한 오류 {}: {}", request.getRequestURI(), e.getMessage(), e);
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(500),
+                Title.of("서버 오류"),
+                Detail.of("요청을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.")
+        );
+        return ResponseEntity.internalServerError().body(errorResponse);
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
