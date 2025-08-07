@@ -1,5 +1,18 @@
 spring:
-  profiles:
-    active: local
   messages:
     basename: messages-validation
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/minimalest?serverTimezone=Asia/Seoul}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+auth:
+  jwt:
+    issuer: ${AUTH_JWT_ISSUER:minimalest.kr}
+    secret-key: ${AUTH_JWT_SECRET_KEY:1234567890abcdefghijk!@#$%^&*()_+}
+    access-validity-in-seconds: ${AUTH_JWT_ACCESS_VALIDITY_IN_SECONDS:3600} # 1시간
+    refresh-validity-in-seconds: ${AUTH_JWT_REFRESH_VALIDITY_IN_SECONDS:604800}
