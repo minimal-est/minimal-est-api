@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-@Profile("local")
+@Profile("default")
 @RequiredArgsConstructor
 @Slf4j
 public class InitDataRunner implements CommandLineRunner {
