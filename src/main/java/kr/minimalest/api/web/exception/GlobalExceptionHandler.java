@@ -2,10 +2,12 @@ package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.exception.AuthenticateUserException;
+import kr.minimalest.api.application.exception.InvalidRefreshToken;
 import kr.minimalest.api.web.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,32 +85,46 @@ public class GlobalExceptionHandler {
                 Properties.of("errors", errors)
         );
 
-        return ResponseEntity
-                .badRequest()
-                .body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(AuthenticateUserException.class)
-    public ResponseEntity<?> handleWebException(AuthenticateUserException e) {
+    public ResponseEntity<?> handleAuthenticationUserException(AuthenticateUserException e) {
         ErrorResponse errorResponse = ErrorResponse.of(
                 Status.of(401),
                 Title.of("사용자 인증 과정 실패"),
                 Detail.of(e.getMessage())
         );
-        return ResponseEntity
-                .status(401)
-                .body(errorResponse);
+        return ResponseEntity.status(401).body(errorResponse);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<?> handleWebException(UnauthorizedException e) {
+    public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e) {
         ErrorResponse errorResponse = ErrorResponse.of(
                 Status.of(401),
                 Title.of("인증 실패"),
                 Detail.of(e.getMessage())
         );
-        return ResponseEntity
-                .status(401)
-                .body(errorResponse);
+        return ResponseEntity.status(401).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidRefreshToken.class)
+    public ResponseEntity<?> handleInvalidRefreshToken(InvalidRefreshToken e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(401),
+                Title.of("토큰 재발급 실패"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(401).body(errorResponse);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<?> handleAuthorizationDenied(AuthorizationDeniedException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(403),
+                Title.of("인가 거절"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(403).body(errorResponse);
     }
 }
