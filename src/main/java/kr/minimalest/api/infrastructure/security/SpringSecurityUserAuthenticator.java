@@ -11,6 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+/**
+ * 로그인 과정에만 사용됩니다. 로그인 외에는 사용되지 않습니다.
+ * 인증은 Jwt 필터에서 이루어지며, 자동으로 주입됩니다.
+ * @see JwtAuthenticationFilter
+ */
 @Service
 @RequiredArgsConstructor
 public class SpringSecurityUserAuthenticator implements UserAuthenticator {
