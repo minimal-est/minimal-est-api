@@ -2,6 +2,7 @@ package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.exception.AuthenticateUserException;
+import kr.minimalest.api.application.exception.EmailDuplicatedException;
 import kr.minimalest.api.application.exception.InvalidRefreshToken;
 import kr.minimalest.api.web.*;
 import lombok.extern.slf4j.Slf4j;
@@ -126,5 +127,15 @@ public class GlobalExceptionHandler {
                 Detail.of(e.getMessage())
         );
         return ResponseEntity.status(403).body(errorResponse);
+    }
+
+    @ExceptionHandler(EmailDuplicatedException.class)
+    public ResponseEntity<?> handleEmailDuplicated(EmailDuplicatedException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(409),
+                Title.of("이메일 중복"),
+                Detail.of("이메일이 중복됩니다. 다른 이메일을 사용해주세요.")
+        );
+        return ResponseEntity.status(409).body(errorResponse);
     }
 }
