@@ -25,15 +25,15 @@ public class AuthenticateAndIssueToken {
                 Email.of(argument.email()),
                 Password.of(argument.rawPassword())
         );
-        UserUUID userUUID = authenticatedUser.userUUID();
-        List<RoleType> roleTypes = authenticatedUser.roles().stream().map(Role::roleType).toList();
+        UserId userId = authenticatedUser.getId();
+        List<RoleType> roleTypes = authenticatedUser.getRoles().stream().map(Role::getRoleType).toList();
 
-        JwtToken accessToken = jwtProvider.generateAccessToken(userUUID, roleTypes);
-        JwtToken refreshToken = jwtProvider.generateRefreshToken(userUUID, roleTypes);
+        JwtToken accessToken = jwtProvider.generateAccessToken(userId, roleTypes);
+        JwtToken refreshToken = jwtProvider.generateRefreshToken(userId, roleTypes);
 
         JwtTokenValidityInMills refreshTokenValidityInMills = jwtProvider.getRefreshValidityInMills();
 
-        refreshTokenStore.put(userUUID, refreshToken);
+        refreshTokenStore.put(userId, refreshToken);
 
         return JwtAuthResult.of(accessToken, refreshToken, refreshTokenValidityInMills);
     }

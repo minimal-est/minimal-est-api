@@ -10,13 +10,14 @@ import kr.minimalest.api.application.auth.JwtToken;
 import kr.minimalest.api.application.auth.JwtTokenPayload;
 import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
 import kr.minimalest.api.domain.user.RoleType;
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import kr.minimalest.api.infrastructure.jwt.exception.JwtTokenVerifyException;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class SimpleJwtProvider implements JwtProvider {
@@ -50,7 +51,7 @@ public class SimpleJwtProvider implements JwtProvider {
 
     private JwtTokenPayload serializeToJwtPayloadFrom(DecodedJWT decodedJWT) {
         try {
-            UserUUID userUUID = UserUUID.of(decodedJWT.getSubject());
+            UserId userId = UserId.of(UUID.fromString(decodedJWT.getSubject()));
             List<String> roleStrings = decodedJWT.getClaim(CLAIM_ROLES).asList(String.class);
 
             if (roleStrings == null || roleStrings.isEmpty()) {
@@ -64,31 +65,31 @@ public class SimpleJwtProvider implements JwtProvider {
             Instant issuedAt = decodedJWT.getIssuedAt().toInstant();
             Instant expiresAt = decodedJWT.getExpiresAt().toInstant();
 
-            return JwtTokenPayload.of(userUUID, roleTypes, issuedAt, expiresAt);
+            return JwtTokenPayload.of(userId, roleTypes, issuedAt, expiresAt);
         } catch (Exception e) {
             throw new IllegalStateException("JwtPayload 역직렬화에 실패했습니다!", e);
         }
     }
 
     @Override
-    public JwtToken generateAccessToken(UserUUID userUUID, List<RoleType> roleTypes) {
-        return generateToken(userUUID, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.accessValidityInSeconds()));
+    public JwtToken generateAccessToken(UserId userId, List<RoleType> roleTypes) {
+        return generateToken(userId, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.accessValidityInSeconds()));
     }
 
     @Override
-    public JwtToken generateRefreshToken(UserUUID userUUID, List<RoleType> roleTypes) {
-        return generateToken(userUUID, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.refreshValidityInSeconds()));
+    public JwtToken generateRefreshToken(UserId userId, List<RoleType> roleTypes) {
+        return generateToken(userId, roleTypes, JwtTokenValidityInMills.ofSeconds(jwtProperties.refreshValidityInSeconds()));
     }
 
     @Override
-    public JwtToken generateToken(UserUUID userUUID, List<RoleType> roleTypes, JwtTokenValidityInMills jwtTokenValidityInMills) {
+    public JwtToken generateToken(UserId userId, List<RoleType> roleTypes, JwtTokenValidityInMills jwtTokenValidityInMills) {
         try {
             Instant now = Instant.now();
             return JwtToken.of(JWT.create()
                     .withIssuer(jwtProperties.issuer())
                     .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(now.plusMillis(jwtTokenValidityInMills.value())))
-                    .withSubject(userUUID.value())
+                    .withSubject(userId.id().toString())
                     .withClaim(CLAIM_ROLES, roleTypes.stream().map(Enum::name).toList())
                     .sign(algorithm));
         } catch (Exception e) {

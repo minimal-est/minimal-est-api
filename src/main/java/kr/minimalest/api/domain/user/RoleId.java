@@ -1,13 +1,20 @@
 package kr.minimalest.api.domain.user;
 
-public record RoleId (Long value){
+import org.springframework.util.Assert;
 
-       public RoleId {
-               if (value == null)
-                       throw new IllegalStateException("roleId는 null일 수 없습니다!");
-       }
+import java.util.UUID;
 
-       public static RoleId of(Long value) {
-               return new RoleId(value);
-       }
+public record RoleId(UUID id) {
+
+    public RoleId {
+        Assert.notNull(id, "id는 null일 수 없습니다.");
+    }
+
+    public RoleId() {
+        this(UUID.randomUUID());
+    }
+
+    public static RoleId generate() {
+        return new RoleId(UUID.randomUUID());
+    }
 }

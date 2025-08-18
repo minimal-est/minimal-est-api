@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .map(roleName -> new SimpleGrantedAuthority("ROLE_" + roleName))
                         .toList();
 
-                JwtUserDetails jwtUserDetails = new JwtUserDetails(payload.userUUID(), authorities);
+                JwtUserDetails jwtUserDetails = new JwtUserDetails(payload.userId(), authorities);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         jwtUserDetails,

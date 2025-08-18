@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +12,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class JwtUserDetails implements UserDetails {
 
-    private final UserUUID userUUID;
+    private final UserId userId;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -27,7 +27,7 @@ public class JwtUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userUUID.value();
+        return userId.id().toString();
     }
 
     @Override

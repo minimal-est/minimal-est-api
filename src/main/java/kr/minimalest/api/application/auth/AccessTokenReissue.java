@@ -2,7 +2,7 @@ package kr.minimalest.api.application.auth;
 
 import kr.minimalest.api.application.common.annotation.Business;
 import kr.minimalest.api.application.exception.InvalidRefreshToken;
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import lombok.RequiredArgsConstructor;
 
 @Business
@@ -21,9 +21,9 @@ public class AccessTokenReissue {
 
         JwtTokenPayload payload = verifyAndGetPayload(refreshToken);
 
-        validateRefreshTokenInStore(payload.userUUID(), refreshToken);
+        validateRefreshTokenInStore(payload.userId(), refreshToken);
 
-        JwtToken issuedAccessToken = jwtProvider.generateAccessToken(payload.userUUID(), payload.roleTypes());
+        JwtToken issuedAccessToken = jwtProvider.generateAccessToken(payload.userId(), payload.roleTypes());
 
         return IssuedAccessTokenResult.of(issuedAccessToken);
     }
@@ -36,8 +36,8 @@ public class AccessTokenReissue {
         }
     }
 
-    private void validateRefreshTokenInStore(UserUUID userUUID, JwtToken refreshToken) {
-        JwtToken refreshTokenInStore = refreshTokenStore.find(userUUID)
+    private void validateRefreshTokenInStore(UserId userId, JwtToken refreshToken) {
+        JwtToken refreshTokenInStore = refreshTokenStore.find(userId)
                 .orElseThrow(() -> new InvalidRefreshToken("해당 Refresh Token은 안전하지 않습니다!"));
 
         if (!refreshTokenInStore.equals(refreshToken)) {

@@ -1,6 +1,6 @@
 package kr.minimalest.api.application.auth;
 
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -8,9 +8,9 @@ import java.util.Optional;
 @Component
 public interface RefreshTokenStore {
 
-    void put(UserUUID userUUID, JwtToken refreshToken);
+    void put(UserId userId, JwtToken refreshToken);
 
-    Optional<JwtToken> find(UserUUID userUUID);
+    Optional<JwtToken> find(UserId userId);
 
-    void remove(UserUUID userUUID);
+    void remove(UserId userId);
 }
