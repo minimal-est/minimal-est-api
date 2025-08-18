@@ -2,7 +2,7 @@ package kr.minimalest.api.application.auth;
 
 import kr.minimalest.api.application.exception.InvalidRefreshToken;
 import kr.minimalest.api.domain.user.RoleType;
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,7 +34,7 @@ class AccessTokenReissueTest {
 
     @Getter
     static class TokenFixture {
-        private final UserUUID userUUID = UserUUID.of(UUID.randomUUID().toString());
+        private final UserId userId = UserId.generate();
         private final List<RoleType> roleTypes = List.of(RoleType.USER);
         private final JwtToken validRefreshToken = JwtToken.of("valid-refresh-token");
         private final JwtToken issuedAccessToken = JwtToken.of("issued-access-token");
@@ -52,7 +51,7 @@ class AccessTokenReissueTest {
 
         public JwtTokenPayload getTokenPayload() {
             return JwtTokenPayload.of(
-                    userUUID,
+                    userId,
                     roleTypes,
                     Instant.now(),
                     Instant.now().plusSeconds(3600)
@@ -71,8 +70,8 @@ class AccessTokenReissueTest {
             TokenFixture fixture = new TokenFixture();
 
             given(jwtProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
-            given(refreshTokenStore.find(fixture.userUUID)).willReturn(Optional.of(fixture.getValidRefreshTokenInStore()));
-            given(jwtProvider.generateAccessToken(fixture.userUUID, fixture.roleTypes)).willReturn(fixture.getIssuedAccessToken());
+            given(refreshTokenStore.find(fixture.userId)).willReturn(Optional.of(fixture.getValidRefreshTokenInStore()));
+            given(jwtProvider.generateAccessToken(fixture.userId, fixture.roleTypes)).willReturn(fixture.getIssuedAccessToken());
 
             // when
             IssuedAccessTokenResult result = accessTokenReissue.exec(fixture.getArgument());
@@ -103,7 +102,7 @@ class AccessTokenReissueTest {
             TokenFixture fixture = new TokenFixture();
 
             given(jwtProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
-            given(refreshTokenStore.find(fixture.getUserUUID())).willReturn(Optional.empty());
+            given(refreshTokenStore.find(fixture.userId)).willReturn(Optional.empty());
 
             // when & then
             assertThrows(InvalidRefreshToken.class, () ->

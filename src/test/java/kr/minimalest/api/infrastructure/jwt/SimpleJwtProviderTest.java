@@ -6,7 +6,7 @@ import kr.minimalest.api.application.auth.JwtTokenValidityInMills;
 import kr.minimalest.api.application.auth.JwtTokenPayload;
 import kr.minimalest.api.application.auth.JwtToken;
 import kr.minimalest.api.domain.user.RoleType;
-import kr.minimalest.api.domain.user.UserUUID;
+import kr.minimalest.api.domain.user.UserId;
 import kr.minimalest.api.infrastructure.jwt.exception.JwtTokenVerifyException;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ class SimpleJwtProviderTest {
 
     @Getter
     static class TokenFixture {
-        private final UserUUID userUUID = UserUUID.of(UUID.randomUUID().toString());
+        private final UserId userId = UserId.of(UUID.randomUUID());
         private final List<RoleType> roleTypes = List.of(RoleType.USER, RoleType.ADMIN);
         private final JwtTokenValidityInMills validity = JwtTokenValidityInMills.ofSeconds(3600);
     }
@@ -53,13 +53,13 @@ class SimpleJwtProviderTest {
         void shouldBeVerifiedWhenTokenIsValid() {
             // given
             TokenFixture fixture = new TokenFixture();
-            JwtToken jwtToken = jwtProvider.generateToken(fixture.userUUID, fixture.roleTypes, fixture.validity);
+            JwtToken jwtToken = jwtProvider.generateToken(fixture.userId, fixture.roleTypes, fixture.validity);
 
             // when
             JwtTokenPayload jwtTokenPayload = jwtProvider.verify(jwtToken);
 
             // then
-            assertThat(jwtTokenPayload.userUUID()).isEqualTo(fixture.userUUID);
+            assertThat(jwtTokenPayload.userId()).isEqualTo(fixture.userId);
             assertThat(jwtTokenPayload.roleTypes()).isEqualTo(fixture.roleTypes);
             assertThat(jwtTokenPayload.expiresAt()).isAfter(Instant.now());
             assertThat(jwtTokenPayload.issuedAt()).isBefore(Instant.now());
@@ -89,13 +89,12 @@ class SimpleJwtProviderTest {
             TokenFixture fixture = new TokenFixture();
 
             // when
-            // TODO: 외부 라이브러리 사용..이 필수일까?
-            JwtToken jwtToken = jwtProvider.generateAccessToken(fixture.userUUID, fixture.roleTypes);
+            JwtToken jwtToken = jwtProvider.generateAccessToken(fixture.userId, fixture.roleTypes);
 
             // then
             DecodedJWT decodedJWT = JWT.decode(jwtToken.value());
             assertThat(decodedJWT.getToken()).isEqualTo(jwtToken.value());
-            assertThat(decodedJWT.getSubject()).isEqualTo(fixture.userUUID.value());
+            assertThat(decodedJWT.getSubject()).isEqualTo(fixture.userId.id().toString());
             assertThat(decodedJWT.getClaim("roles").asList(String.class))
                     .isEqualTo(fixture.roleTypes.stream().map(Enum::name).toList());
         }

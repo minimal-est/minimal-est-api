@@ -11,10 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
@@ -37,9 +33,6 @@ class AuthenticateAndIssueTokenTest {
 
     @Getter
     private static class AuthTokenFixture {
-        private final UserUUID userUUID = UserUUID.of(UUID.randomUUID().toString());
-        private final RoleType roleType = RoleType.USER;
-        private final List<RoleType> roleTypes = List.of(roleType);
         private final JwtTokenValidityInMills refreshTokenValidityInMills = JwtTokenValidityInMills.ofSeconds(3600);
         private final String validEmail = "test@test.com";
         private final String invalidEmail = "test@";
@@ -61,15 +54,8 @@ class AuthenticateAndIssueTokenTest {
             return AuthenticateAndIssueTokenArgument.of(validEmail, invalidRawPassword);
         }
 
-        public User getAuthenticatedUser() {
-            return User.withoutId(
-                    userUUID,
-                    Email.of(validEmail),
-                    Password.of(validRawPassword),
-                    Set.of(Role.of(RoleId.of(1L), roleType)),
-                    null,
-                    null
-            );
+        public User createAuthenticatedUser() {
+            return User.signUp(Email.of(invalidEmail), Password.of(invalidRawPassword));
         }
     }
 
@@ -82,20 +68,23 @@ class AuthenticateAndIssueTokenTest {
         void shouldIssueTokensWhenCredentialsAreValid() {
             // given
             AuthTokenFixture fixture = new AuthTokenFixture();
+
+            User authenticatedUser = fixture.createAuthenticatedUser();
+
             given(userAuthenticator.authenticate(
                     Email.of(fixture.validEmail),
                     Password.of(fixture.validRawPassword)
-            )).willReturn(fixture.getAuthenticatedUser());
+            )).willReturn(authenticatedUser);
 
-            given(jwtProvider.generateAccessToken(fixture.userUUID, fixture.roleTypes)).willReturn(fixture.generatedAccessToken);
-            given(jwtProvider.generateRefreshToken(fixture.userUUID, fixture.roleTypes)).willReturn(fixture.generatedRefreshToken);
+            given(jwtProvider.generateAccessToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedAccessToken);
+            given(jwtProvider.generateRefreshToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedRefreshToken);
             given(jwtProvider.getRefreshValidityInMills()).willReturn(fixture.getRefreshTokenValidityInMills());
 
             // when
             JwtAuthResult result = authenticateAndIssueToken.exec(fixture.getArgument());
 
             // then
-            verify(refreshTokenStore).put(fixture.userUUID, fixture.generatedRefreshToken);
+            verify(refreshTokenStore).put(authenticatedUser.getId(), fixture.generatedRefreshToken);
             assertThat(result.accessToken()).isEqualTo(fixture.generatedAccessToken);
             assertThat(result.refreshToken()).isEqualTo(fixture.generatedRefreshToken);
             assertThat(result.refreshTokenValidityInMills()).isEqualTo(fixture.getRefreshTokenValidityInMills());
