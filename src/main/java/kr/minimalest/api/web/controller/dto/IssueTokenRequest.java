@@ -2,17 +2,17 @@ package kr.minimalest.api.web.controller.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 public record IssueTokenRequest(
 
-        @Length(min = 2, max = 50)
-        @Email
         @NotBlank
+        @Size(min = 2, max = 50)
+        @Email
         String email,
 
-        @Length(min = 2, max = 50)
         @NotBlank
+        @Size(min = 2, max = 50)
         String password
 ) {
 }
