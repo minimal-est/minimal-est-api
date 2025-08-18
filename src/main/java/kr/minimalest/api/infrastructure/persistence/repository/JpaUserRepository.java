@@ -1,0 +1,45 @@
+package kr.minimalest.api.infrastructure.persistence.repository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import kr.minimalest.api.domain.user.Email;
+import kr.minimalest.api.domain.user.User;
+import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.user.repository.UserRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Repository
+public class JpaUserRepository implements UserRepository {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> findById(UserId userId) {
+        User user = em.find(User.class, userId);
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> findByEmail(Email email) {
+        User user = em
+                .createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    @Transactional
+    public UserId save(User user) {
+        em.persist(user);
+        return user.getId();
+    }
+}
