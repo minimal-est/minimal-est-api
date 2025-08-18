@@ -12,5 +12,7 @@ public interface UserRepository {
 
     Optional<User> findByEmail(Email email);
 
+    boolean exists(Email email);
+
     UserId save(User user);
 }

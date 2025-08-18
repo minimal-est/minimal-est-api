@@ -37,6 +37,15 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public boolean exists(Email email) {
+        Long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class)
+                .setParameter("email", email)
+                .getSingleResult();
+        return count > 0;
+    }
+
+    @Override
     @Transactional
     public UserId save(User user) {
         em.persist(user);
