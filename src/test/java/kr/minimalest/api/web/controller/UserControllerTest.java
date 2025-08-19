@@ -2,7 +2,6 @@ package kr.minimalest.api.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.minimalest.api.application.exception.EmailDuplicatedException;
-import kr.minimalest.api.application.exception.PasswordNotEncodedException;
 import kr.minimalest.api.application.user.SignUp;
 import kr.minimalest.api.application.user.SignUpArgument;
 import kr.minimalest.api.application.user.SignUpResult;
@@ -125,22 +124,6 @@ class UserControllerTest {
             // then
             perform
                     .andExpect(status().isConflict());
-        }
-
-        @Test
-        @DisplayName("비밀번호 인코딩 과정 실패 시 500 에러를 반환한다")
-        void shouldReturn500WhenPasswordEncodingFails() throws Exception {
-            // given
-            given(signUp.exec(argument)).willThrow(PasswordNotEncodedException.class);
-
-            // when
-            ResultActions perform = mockMvc.perform(post("/api/users")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)));
-
-            // then
-            perform
-                    .andExpect(status().isInternalServerError());
         }
     }
 }

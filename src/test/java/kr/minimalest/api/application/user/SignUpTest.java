@@ -1,23 +1,29 @@
 package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.exception.EmailDuplicatedException;
-import kr.minimalest.api.application.exception.PasswordNotEncodedException;
 import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.Password;
 import kr.minimalest.api.domain.user.User;
+import kr.minimalest.api.domain.user.event.SignedUpEvent;
 import kr.minimalest.api.domain.user.repository.UserRepository;
+import kr.minimalest.api.domain.user.service.PasswordService;
 import lombok.Getter;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SignUpTest {
@@ -29,16 +35,19 @@ class SignUpTest {
     UserRepository userRepository;
 
     @Mock
-    PasswordEncoder encoder;
+    PasswordService passwordService;
+
+    @Mock
+    ApplicationEventPublisher eventPublisher;
 
     @Getter
     static class SignUpFixture {
         private final Email emailToSignUp = Email.of("test@test.com");
-        private final Password rawPasswordToSignUp = Password.of("test1234");
-        private final Password encPasswordToSignUp = Password.of("encoded-test1234");
+        private final String plainPassword = "test1234";
+        private final Password encryptedPassword = Password.of("encoded-test1234");
 
         public SignUpArgument getSignUpArgument() {
-            return SignUpArgument.of(emailToSignUp.value(), rawPasswordToSignUp.value());
+            return SignUpArgument.of(emailToSignUp.value(), plainPassword);
         }
     }
 
@@ -47,26 +56,23 @@ class SignUpTest {
     class HappySignUp {
 
         SignUpFixture fixture = new SignUpFixture();
-        User userToSignUp = User.signUp(fixture.emailToSignUp, fixture.rawPasswordToSignUp);
+        User userToSignUp = User.signUp(fixture.emailToSignUp, fixture.encryptedPassword);
         SignUpArgument argument = fixture.getSignUpArgument();
 
         @Test
         @DisplayName("DB에 사용자가 성공적으로 저장된다")
         void shouldSaveUserInDbSuccessfully() {
             // given
+            given(passwordService.encryptPassword(fixture.plainPassword)).willReturn(fixture.encryptedPassword);
             given(userRepository.existsByEmail(fixture.emailToSignUp)).willReturn(false);
             given(userRepository.save(any())).willReturn(userToSignUp.getId());
-            given(encoder.encode(fixture.rawPasswordToSignUp.value())).willReturn(fixture.encPasswordToSignUp.value());
-            given(encoder.matches(
-                    fixture.rawPasswordToSignUp.value(),
-                    fixture.encPasswordToSignUp.value()
-            )).willReturn(true);
 
             // when
             SignUpResult result = signUp.exec(argument);
 
             // then
             assertThat(result.userId()).isEqualTo(userToSignUp.getId());
+            verify(eventPublisher, times(1)).publishEvent(any(SignedUpEvent.class));
         }
 
         @Test
@@ -74,27 +80,9 @@ class SignUpTest {
         void shouldThrowExceptionWhenEmailAlreadyExists() {
             // given
             given(userRepository.existsByEmail(fixture.emailToSignUp)).willReturn(true);
-            given(encoder.encode(fixture.rawPasswordToSignUp.value())).willReturn(fixture.encPasswordToSignUp.value());
 
             // when & then
             assertThrows(EmailDuplicatedException.class, () -> {
-                signUp.exec(argument);
-            });
-        }
-
-        @Test
-        @DisplayName("암호화가 정상적으로 이루어지지 않으면 예외가 발생한다")
-        void shouldThrowExceptionWhenPasswordIsNotEncoded() {
-            // given
-            given(userRepository.existsByEmail(fixture.emailToSignUp)).willReturn(false);
-            given(encoder.encode(fixture.rawPasswordToSignUp.value())).willReturn(fixture.encPasswordToSignUp.value());
-            given(encoder.matches(
-                    fixture.rawPasswordToSignUp.value(),
-                    fixture.encPasswordToSignUp.value()
-            )).willReturn(false);
-
-            // when & then
-            assertThrows(PasswordNotEncodedException.class, () -> {
                 signUp.exec(argument);
             });
         }

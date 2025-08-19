@@ -1,12 +1,15 @@
 package kr.minimalest.api.domain.user;
 
 import jakarta.persistence.*;
+import kr.minimalest.api.domain.DomainEvent;
+import kr.minimalest.api.domain.user.event.SignedUpEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,16 +52,14 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public static User signUp(UserId userId, Email email, Password password) {
-        User u = new User(userId, email, password, new HashSet<>(), LocalDateTime.now(), LocalDateTime.now());
-        u.assignRole(Role.ofDefault());
-        return u;
-    }
+    @Transient
+    private final List<DomainEvent> events = new ArrayList<>();
 
     public static User signUp(Email email, Password password) {
         User u = new User(UserId.generate(), email, password, new HashSet<>(), LocalDateTime.now(),
                 LocalDateTime.now());
         u.assignRole(Role.ofDefault());
+        u.registerEvent(SignedUpEvent.of(u.getId(), u.getEmail()));
         return u;
     }
 
@@ -92,5 +93,15 @@ public class User {
 
     public boolean hasRole(RoleType roleType) {
         return roles.stream().anyMatch(role -> role.getRoleType() == roleType);
+    }
+
+    public void registerEvent(DomainEvent event) {
+        events.add(event);
+    }
+
+    public List<DomainEvent> releaseEvents() {
+        List<DomainEvent> releasedEvents = new ArrayList<>(this.events);
+        this.events.clear();
+        return releasedEvents;
     }
 }
