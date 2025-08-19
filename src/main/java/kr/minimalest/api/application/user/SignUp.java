@@ -35,7 +35,7 @@ public class SignUp {
     }
 
     private void validateEmail(Email email) {
-        boolean isEmailDuplicated = userRepository.exists(email);
+        boolean isEmailDuplicated = userRepository.existsByEmail(email);
         if (isEmailDuplicated) {
             throw new EmailDuplicatedException("이메일이 중복됩니다.");
         }
