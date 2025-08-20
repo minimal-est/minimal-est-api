@@ -1,7 +1,7 @@
 package kr.minimalest.api.domain.user;
 
 import jakarta.persistence.*;
-import kr.minimalest.api.domain.DomainEvent;
+import kr.minimalest.api.domain.AggregateRoot;
 import kr.minimalest.api.domain.user.event.SignedUpEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +18,7 @@ import java.util.Set;
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User {
+public class User extends AggregateRoot {
 
     @EmbeddedId
     @Column(name = "user_id")
