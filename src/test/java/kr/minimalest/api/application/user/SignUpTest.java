@@ -4,7 +4,7 @@ import kr.minimalest.api.application.exception.EmailDuplicatedException;
 import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.Password;
 import kr.minimalest.api.domain.user.User;
-import kr.minimalest.api.domain.user.event.SignedUpEvent;
+import kr.minimalest.api.domain.user.event.UserSignedUpEvent;
 import kr.minimalest.api.domain.user.repository.UserRepository;
 import kr.minimalest.api.domain.user.service.PasswordService;
 import lombok.Getter;
@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,7 +71,7 @@ class SignUpTest {
 
             // then
             assertThat(result.userId()).isEqualTo(userToSignUp.getId());
-            verify(eventPublisher, times(1)).publishEvent(any(SignedUpEvent.class));
+            verify(eventPublisher, times(1)).publishEvent(any(UserSignedUpEvent.class));
         }
 
         @Test

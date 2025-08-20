@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.event;
 
-import kr.minimalest.api.domain.user.event.SignedUpEvent;
+import kr.minimalest.api.domain.user.event.UserSignedUpEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -15,7 +15,7 @@ public class UserEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onSignedUp(SignedUpEvent event) {
+    public void onUserSignedUp(UserSignedUpEvent event) {
         log.info("신규 사용자 등록: {}, {}", event.getUserId(), event.getEmail());
     }
 }

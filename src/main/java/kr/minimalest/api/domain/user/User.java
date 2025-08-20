@@ -2,7 +2,7 @@ package kr.minimalest.api.domain.user;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.domain.AggregateRoot;
-import kr.minimalest.api.domain.user.event.SignedUpEvent;
+import kr.minimalest.api.domain.user.event.UserSignedUpEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class User extends AggregateRoot {
         User u = new User(UserId.generate(), email, password, new HashSet<>(), LocalDateTime.now(),
                 LocalDateTime.now());
         u.assignRole(Role.ofDefault());
-        u.registerEvent(SignedUpEvent.of(u.getId(), u.getEmail()));
+        u.registerEvent(UserSignedUpEvent.of(u.getId(), u.getEmail()));
         return u;
     }
 
