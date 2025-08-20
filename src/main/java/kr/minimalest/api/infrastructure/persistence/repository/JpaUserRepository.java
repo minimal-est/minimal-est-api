@@ -6,16 +6,17 @@ import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.User;
 import kr.minimalest.api.domain.user.UserId;
 import kr.minimalest.api.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class JpaUserRepository implements UserRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     @Override
     @Transactional(readOnly = true)
