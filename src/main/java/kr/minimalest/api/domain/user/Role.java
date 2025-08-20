@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 public class Role {
 
     @EmbeddedId
-    @Column(name = "role_id")
     private RoleId id;
 
     @ManyToOne(fetch = FetchType.LAZY)

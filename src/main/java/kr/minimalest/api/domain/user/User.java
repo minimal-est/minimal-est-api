@@ -21,7 +21,6 @@ import java.util.Set;
 public class User extends AggregateRoot {
 
     @EmbeddedId
-    @Column(name = "user_id")
     private UserId id;
 
     @Embedded
@@ -92,15 +91,5 @@ public class User extends AggregateRoot {
 
     public boolean hasRole(RoleType roleType) {
         return roles.stream().anyMatch(role -> role.getRoleType() == roleType);
-    }
-
-    public void registerEvent(DomainEvent event) {
-        events.add(event);
-    }
-
-    public List<DomainEvent> releaseEvents() {
-        List<DomainEvent> releasedEvents = new ArrayList<>(this.events);
-        this.events.clear();
-        return releasedEvents;
     }
 }
