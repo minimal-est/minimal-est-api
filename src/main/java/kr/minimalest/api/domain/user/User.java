@@ -50,9 +50,6 @@ public class User extends AggregateRoot {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Transient
-    private final List<DomainEvent> events = new ArrayList<>();
-
     public static User signUp(Email email, Password password) {
         User u = new User(UserId.generate(), email, password, new HashSet<>(), LocalDateTime.now(),
                 LocalDateTime.now());
