@@ -1,11 +1,10 @@
-package kr.minimalest.api.infrastructure.persistence.user;
+package kr.minimalest.api.infrastructure.persistence.repository;
 
 import jakarta.persistence.EntityManager;
 import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.Password;
 import kr.minimalest.api.domain.user.User;
 import kr.minimalest.api.domain.user.UserId;
-import kr.minimalest.api.infrastructure.persistence.repository.JpaUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

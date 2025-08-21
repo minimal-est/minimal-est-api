@@ -108,6 +108,24 @@ class JpaBlogRepositoryTest {
             assertThat(optionalBlog).isPresent();
             assertThat(optionalBlog.get().getAuthor().getPenName().name()).isEqualTo("31n5ang");
         }
+
+        @Test
+        @DisplayName("사용자 ID로 블로그를 조회한다")
+        @Transactional
+        void shouldReturnBlogWhenFindBlogByUserId() {
+            // given
+            Blog blog = Blog.create(savedUserId, PenName.of("31n5ang"));
+            em.persist(blog);
+            em.flush();
+            em.clear();
+
+            // when
+            Optional<Blog> optionalBlog = blogRepository.findByUserId(savedUserId);
+
+            // then
+            assertThat(optionalBlog).isPresent();
+            assertThat(optionalBlog.get().getAuthor().getPenName().name()).isEqualTo("31n5ang");
+        }
     }
 
     @Nested
