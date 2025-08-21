@@ -30,6 +30,14 @@ public class JpaBlogRepository implements BlogRepository {
     }
 
     @Override
+    public Optional<Blog> findByUserId(UserId userId) {
+        return em.createQuery("SELECT b FROM Blog b WHERE b.author.userId = :userId", Blog.class)
+                .setParameter("userId", userId)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
     public boolean hasBlogByUserId(UserId userId) {
         return em
                 .createQuery(

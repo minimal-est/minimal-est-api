@@ -13,6 +13,8 @@ public interface BlogRepository {
 
     Optional<Blog> findById(BlogId blogId);
 
+    Optional<Blog> findByUserId(UserId userId);
+
     boolean hasBlogByUserId(UserId userId);
 
     boolean existsByPenName(PenName penName);
