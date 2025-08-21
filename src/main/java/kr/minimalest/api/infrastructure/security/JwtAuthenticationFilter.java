@@ -4,10 +4,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.minimalest.api.application.auth.JwtProvider;
-import kr.minimalest.api.application.auth.JwtToken;
-import kr.minimalest.api.application.auth.JwtTokenPayload;
 import kr.minimalest.api.domain.user.RoleType;
+import kr.minimalest.api.domain.user.Token;
+import kr.minimalest.api.domain.user.TokenPayload;
+import kr.minimalest.api.domain.user.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final TokenProvider tokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                JwtTokenPayload payload = jwtProvider.verify(JwtToken.of(token));
+                TokenPayload payload = tokenProvider.verify(Token.of(token));
 
                 List<SimpleGrantedAuthority> authorities = payload.roleTypes().stream()
                         .map(RoleType::name)

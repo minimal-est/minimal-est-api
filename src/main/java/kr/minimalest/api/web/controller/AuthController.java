@@ -1,7 +1,7 @@
 package kr.minimalest.api.web.controller;
 
 import jakarta.validation.Valid;
-import kr.minimalest.api.application.auth.*;
+import kr.minimalest.api.application.user.*;
 import kr.minimalest.api.web.controller.dto.AccessTokenResponse;
 import kr.minimalest.api.web.controller.dto.IssueTokenRequest;
 import kr.minimalest.api.web.exception.UnauthorizedException;
@@ -29,24 +29,24 @@ public class AuthController {
     public ResponseEntity<?> issueToken(
             @RequestBody @Valid IssueTokenRequest issueTokenRequest
     ) {
-        JwtAuthResult jwtAuthResult = authenticateAndIssueToken.exec(
+        AuthenticateAndIssueTokenResult authenticateAndIssueTokenResult = authenticateAndIssueToken.exec(
                 AuthenticateAndIssueTokenArgument.of(issueTokenRequest.email(), issueTokenRequest.password())
         );
 
-        ResponseCookie responseCookie = buildSafeRefreshResponseCookie(jwtAuthResult);
+        ResponseCookie responseCookie = buildSafeRefreshResponseCookie(authenticateAndIssueTokenResult);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                .body(AccessTokenResponse.of(jwtAuthResult.accessToken().value()));
+                .body(AccessTokenResponse.of(authenticateAndIssueTokenResult.accessToken().value()));
     }
 
-    private ResponseCookie buildSafeRefreshResponseCookie(JwtAuthResult jwtAuthResult) {
+    private ResponseCookie buildSafeRefreshResponseCookie(AuthenticateAndIssueTokenResult authenticateAndIssueTokenResult) {
         return ResponseCookie
-                .from(REFRESH_TOKEN, jwtAuthResult.refreshToken().value())
+                .from(REFRESH_TOKEN, authenticateAndIssueTokenResult.refreshToken().value())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(jwtAuthResult.refreshTokenValidityInMills().toSeconds())
+                .maxAge(authenticateAndIssueTokenResult.refreshTokenValidityInMills().toSeconds())
                 .sameSite("lax")
                 .build();
     }
@@ -59,11 +59,11 @@ public class AuthController {
             throw new UnauthorizedException("리프레시 토큰 쿠키가 존재하지 않습니다.");
         }
 
-        IssuedAccessTokenResult issuedAccessTokenResult = accessTokenReissue.exec(
+        AccessTokenReissueResult accessTokenReissueResult = accessTokenReissue.exec(
                 AccessTokenReissueArgument.of(refreshToken)
         );
 
         return ResponseEntity.ok()
-                .body(AccessTokenResponse.of(issuedAccessTokenResult.accessToken().value()));
+                .body(AccessTokenResponse.of(accessTokenReissueResult.accessToken().value()));
     }
 }

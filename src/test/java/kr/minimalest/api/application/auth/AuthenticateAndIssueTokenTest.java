@@ -1,7 +1,12 @@
 package kr.minimalest.api.application.auth;
 
 import kr.minimalest.api.application.exception.AuthenticateUserException;
+import kr.minimalest.api.application.user.AuthenticateAndIssueToken;
+import kr.minimalest.api.application.user.AuthenticateAndIssueTokenArgument;
+import kr.minimalest.api.application.user.AuthenticateAndIssueTokenResult;
 import kr.minimalest.api.domain.user.*;
+import kr.minimalest.api.domain.user.service.TokenProvider;
+import kr.minimalest.api.domain.user.service.UserAuthenticator;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +28,7 @@ class AuthenticateAndIssueTokenTest {
     AuthenticateAndIssueToken authenticateAndIssueToken;
 
     @Mock
-    JwtProvider jwtProvider;
+    TokenProvider tokenProvider;
 
     @Mock
     UserAuthenticator userAuthenticator;
@@ -33,14 +38,14 @@ class AuthenticateAndIssueTokenTest {
 
     @Getter
     private static class AuthTokenFixture {
-        private final JwtTokenValidityInMills refreshTokenValidityInMills = JwtTokenValidityInMills.ofSeconds(3600);
+        private final TokenValidityInMills refreshTokenValidityInMills = TokenValidityInMills.ofSeconds(3600);
         private final String validEmail = "test@test.com";
         private final String invalidEmail = "test@";
         private final String validRawPassword = "test1234";
         private final String invalidRawPassword = "t";
 
-        private final JwtToken generatedAccessToken = JwtToken.of("access-token");
-        private final JwtToken generatedRefreshToken = JwtToken.of("refresh-token");
+        private final Token generatedAccessToken = Token.of("access-token");
+        private final Token generatedRefreshToken = Token.of("refresh-token");
 
         public AuthenticateAndIssueTokenArgument getArgument() {
             return AuthenticateAndIssueTokenArgument.of(validEmail, validRawPassword);
@@ -76,12 +81,12 @@ class AuthenticateAndIssueTokenTest {
                     Password.of(fixture.validRawPassword)
             )).willReturn(authenticatedUser);
 
-            given(jwtProvider.generateAccessToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedAccessToken);
-            given(jwtProvider.generateRefreshToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedRefreshToken);
-            given(jwtProvider.getRefreshValidityInMills()).willReturn(fixture.getRefreshTokenValidityInMills());
+            given(tokenProvider.generateAccessToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedAccessToken);
+            given(tokenProvider.generateRefreshToken(authenticatedUser.getId(), authenticatedUser.getRoleTypes())).willReturn(fixture.generatedRefreshToken);
+            given(tokenProvider.getRefreshValidityInMills()).willReturn(fixture.getRefreshTokenValidityInMills());
 
             // when
-            JwtAuthResult result = authenticateAndIssueToken.exec(fixture.getArgument());
+            AuthenticateAndIssueTokenResult result = authenticateAndIssueToken.exec(fixture.getArgument());
 
             // then
             verify(refreshTokenStore).put(authenticatedUser.getId(), fixture.generatedRefreshToken);

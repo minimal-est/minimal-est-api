@@ -1,8 +1,11 @@
 package kr.minimalest.api.application.auth;
 
 import kr.minimalest.api.application.exception.InvalidRefreshToken;
-import kr.minimalest.api.domain.user.RoleType;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.application.user.AccessTokenReissue;
+import kr.minimalest.api.application.user.AccessTokenReissueArgument;
+import kr.minimalest.api.application.user.AccessTokenReissueResult;
+import kr.minimalest.api.domain.user.*;
+import kr.minimalest.api.domain.user.service.TokenProvider;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,7 +30,7 @@ class AccessTokenReissueTest {
     AccessTokenReissue accessTokenReissue;
 
     @Mock
-    JwtProvider jwtProvider;
+    TokenProvider tokenProvider;
 
     @Mock
     RefreshTokenStore refreshTokenStore;
@@ -36,21 +39,21 @@ class AccessTokenReissueTest {
     static class TokenFixture {
         private final UserId userId = UserId.generate();
         private final List<RoleType> roleTypes = List.of(RoleType.USER);
-        private final JwtToken validRefreshToken = JwtToken.of("valid-refresh-token");
-        private final JwtToken issuedAccessToken = JwtToken.of("issued-access-token");
-        private final JwtToken validRefreshTokenInStore = JwtToken.of("valid-refresh-token");
+        private final Token validRefreshToken = Token.of("valid-refresh-token");
+        private final Token issuedAccessToken = Token.of("issued-access-token");
+        private final Token validRefreshTokenInStore = Token.of("valid-refresh-token");
 
         public AccessTokenReissueArgument getArgument() {
             return AccessTokenReissueArgument.of(validRefreshToken.value());
         }
 
-        public JwtToken getRefreshTokenForVerification() {
-            return JwtToken.of(getArgument().refreshToken());
+        public Token getRefreshTokenForVerification() {
+            return Token.of(getArgument().refreshToken());
         }
 
 
-        public JwtTokenPayload getTokenPayload() {
-            return JwtTokenPayload.of(
+        public TokenPayload getTokenPayload() {
+            return TokenPayload.of(
                     userId,
                     roleTypes,
                     Instant.now(),
@@ -69,12 +72,12 @@ class AccessTokenReissueTest {
             // given
             TokenFixture fixture = new TokenFixture();
 
-            given(jwtProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
+            given(tokenProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
             given(refreshTokenStore.find(fixture.userId)).willReturn(Optional.of(fixture.getValidRefreshTokenInStore()));
-            given(jwtProvider.generateAccessToken(fixture.userId, fixture.roleTypes)).willReturn(fixture.getIssuedAccessToken());
+            given(tokenProvider.generateAccessToken(fixture.userId, fixture.roleTypes)).willReturn(fixture.getIssuedAccessToken());
 
             // when
-            IssuedAccessTokenResult result = accessTokenReissue.exec(fixture.getArgument());
+            AccessTokenReissueResult result = accessTokenReissue.exec(fixture.getArgument());
 
             // then
             assertThat(result.accessToken()).isEqualTo(fixture.issuedAccessToken);
@@ -86,7 +89,7 @@ class AccessTokenReissueTest {
             // given
             TokenFixture fixture = new TokenFixture();
 
-            given(jwtProvider.verify(fixture.getRefreshTokenForVerification()))
+            given(tokenProvider.verify(fixture.getRefreshTokenForVerification()))
                     .willThrow(RuntimeException.class);
 
             // when & then
@@ -101,7 +104,7 @@ class AccessTokenReissueTest {
             // given
             TokenFixture fixture = new TokenFixture();
 
-            given(jwtProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
+            given(tokenProvider.verify(fixture.getRefreshTokenForVerification())).willReturn(fixture.getTokenPayload());
             given(refreshTokenStore.find(fixture.userId)).willReturn(Optional.empty());
 
             // when & then

@@ -1,4 +1,4 @@
-package kr.minimalest.api.application.auth;
+package kr.minimalest.api.application.user;
 
 import org.springframework.util.StringUtils;
 

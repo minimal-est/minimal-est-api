@@ -2,7 +2,12 @@ package kr.minimalest.api.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import kr.minimalest.api.application.auth.*;
+import kr.minimalest.api.application.user.AccessTokenReissue;
+import kr.minimalest.api.application.user.AccessTokenReissueResult;
+import kr.minimalest.api.application.user.AuthenticateAndIssueToken;
+import kr.minimalest.api.application.user.AuthenticateAndIssueTokenResult;
+import kr.minimalest.api.domain.user.Token;
+import kr.minimalest.api.domain.user.TokenValidityInMills;
 import kr.minimalest.api.web.controller.dto.IssueTokenRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,10 +47,10 @@ class AuthControllerTest {
         void shouldIssueTokenWhenValidRequest() throws Exception {
             // given
             IssueTokenRequest issueTokenRequest = new IssueTokenRequest("test@test.com", "test1234");
-            JwtAuthResult authResult = new JwtAuthResult(
-                    JwtToken.of("access-token-value"),
-                    JwtToken.of("refresh-token-value"),
-                    JwtTokenValidityInMills.ofSeconds(3600)
+            AuthenticateAndIssueTokenResult authResult = new AuthenticateAndIssueTokenResult(
+                    Token.of("access-token-value"),
+                    Token.of("refresh-token-value"),
+                    TokenValidityInMills.ofSeconds(3600)
             );
 
             given(authenticateAndIssueToken.exec(any()))
@@ -88,8 +93,8 @@ class AuthControllerTest {
         @DisplayName("유효한 리프레시 토큰으로 액세스 토큰을 갱신한다")
         void shouldRefreshAccessTokenWithValidRefreshToken() throws Exception {
             // given
-            IssuedAccessTokenResult result = new IssuedAccessTokenResult(
-                    JwtToken.of("new-access-token")
+            AccessTokenReissueResult result = new AccessTokenReissueResult(
+                    Token.of("new-access-token")
             );
 
             given(accessTokenReissue.exec(any()))

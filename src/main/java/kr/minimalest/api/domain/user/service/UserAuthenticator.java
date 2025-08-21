@@ -1,4 +1,4 @@
-package kr.minimalest.api.application.auth;
+package kr.minimalest.api.domain.user.service;
 
 import kr.minimalest.api.domain.user.Email;
 import kr.minimalest.api.domain.user.Password;

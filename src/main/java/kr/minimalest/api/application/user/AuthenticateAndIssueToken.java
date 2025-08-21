@@ -1,7 +1,9 @@
-package kr.minimalest.api.application.auth;
+package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.common.annotation.Business;
 import kr.minimalest.api.domain.user.*;
+import kr.minimalest.api.domain.user.service.TokenProvider;
+import kr.minimalest.api.domain.user.service.UserAuthenticator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticateAndIssueToken {
 
-    private final JwtProvider jwtProvider;
+    private final TokenProvider tokenProvider;
     private final UserAuthenticator userAuthenticator;
     private final RefreshTokenStore refreshTokenStore;
 
@@ -20,7 +22,7 @@ public class AuthenticateAndIssueToken {
      * 발급한 리프레시 토큰을 저장합니다.
      */
     @Transactional(readOnly = true)
-    public JwtAuthResult exec(AuthenticateAndIssueTokenArgument argument) {
+    public AuthenticateAndIssueTokenResult exec(AuthenticateAndIssueTokenArgument argument) {
         User authenticatedUser = userAuthenticator.authenticate(
                 Email.of(argument.email()),
                 Password.of(argument.rawPassword())
@@ -28,13 +30,13 @@ public class AuthenticateAndIssueToken {
         UserId userId = authenticatedUser.getId();
         List<RoleType> roleTypes = authenticatedUser.getRoles().stream().map(Role::getRoleType).toList();
 
-        JwtToken accessToken = jwtProvider.generateAccessToken(userId, roleTypes);
-        JwtToken refreshToken = jwtProvider.generateRefreshToken(userId, roleTypes);
+        Token accessToken = tokenProvider.generateAccessToken(userId, roleTypes);
+        Token refreshToken = tokenProvider.generateRefreshToken(userId, roleTypes);
 
-        JwtTokenValidityInMills refreshTokenValidityInMills = jwtProvider.getRefreshValidityInMills();
+        TokenValidityInMills refreshTokenValidityInMills = tokenProvider.getRefreshValidityInMills();
 
         refreshTokenStore.put(userId, refreshToken);
 
-        return JwtAuthResult.of(accessToken, refreshToken, refreshTokenValidityInMills);
+        return AuthenticateAndIssueTokenResult.of(accessToken, refreshToken, refreshTokenValidityInMills);
     }
 }
