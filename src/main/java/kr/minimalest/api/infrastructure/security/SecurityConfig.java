@@ -17,6 +17,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import static org.springframework.http.HttpMethod.POST;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -47,6 +49,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(POST, "/api/users").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
