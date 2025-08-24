@@ -1,10 +1,7 @@
 package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kr.minimalest.api.application.exception.AuthenticateUserException;
-import kr.minimalest.api.application.exception.EmailDuplicatedException;
-import kr.minimalest.api.application.exception.InvalidRefreshToken;
-import kr.minimalest.api.application.exception.UserAlreadyHasBlogException;
+import kr.minimalest.api.application.exception.*;
 import kr.minimalest.api.web.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -135,7 +132,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(
                 Status.of(409),
                 Title.of("이메일 중복"),
-                Detail.of("이메일이 중복됩니다. 다른 이메일을 사용해주세요.")
+                Detail.of(e.getMessage())
         );
         return ResponseEntity.status(409).body(errorResponse);
     }
@@ -143,9 +140,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyHasBlogException.class)
     public ResponseEntity<?> handleUserAlreadyHasBlog(UserAlreadyHasBlogException e) {
         ErrorResponse errorResponse = ErrorResponse.of(
-                Status.of(409),
+                Status.of(400),
                 Title.of("블로그 생성 실패"),
-                Detail.of("사용자의 블로그가 이미 존재합니다.")
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(400).body(errorResponse);
+    }
+
+    @ExceptionHandler(PenNameAlreadyExists.class)
+    public ResponseEntity<?> handlePenNameAlreadyExists(PenNameAlreadyExists e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(409),
+                Title.of("펜네임 중복"),
+                Detail.of(e.getMessage())
         );
         return ResponseEntity.status(409).body(errorResponse);
     }
