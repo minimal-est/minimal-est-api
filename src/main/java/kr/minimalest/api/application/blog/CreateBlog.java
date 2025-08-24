@@ -21,12 +21,10 @@ public class CreateBlog {
     @Transactional
     public CreateBlogResult exec(CreateBlogArgument argument) {
         Blog blog = Blog.create(argument.userId(), PenName.of(argument.penName()));
+        validateBlog(blog);
         BlogId blogId = blogRepository.create(blog);
 
-        validateBlog(blog);
-
         publishEvent(blog);
-
         return CreateBlogResult.of(blogId);
     }
 
