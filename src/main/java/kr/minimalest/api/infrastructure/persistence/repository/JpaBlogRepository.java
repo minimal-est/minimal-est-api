@@ -8,6 +8,7 @@ import kr.minimalest.api.domain.blog.repository.BlogRepository;
 import kr.minimalest.api.domain.user.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,18 +19,21 @@ public class JpaBlogRepository implements BlogRepository {
     private final EntityManager em;
 
     @Override
+    @Transactional
     public BlogId create(Blog blog) {
         em.persist(blog);
         return blog.getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Blog> findById(BlogId blogId) {
         Blog blog = em.find(Blog.class, blogId);
         return Optional.ofNullable(blog);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Blog> findByUserId(UserId userId) {
         return em.createQuery("SELECT b FROM Blog b WHERE b.author.userId = :userId", Blog.class)
                 .setParameter("userId", userId)
@@ -38,6 +42,7 @@ public class JpaBlogRepository implements BlogRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasBlogByUserId(UserId userId) {
         return em
                 .createQuery(
@@ -47,6 +52,7 @@ public class JpaBlogRepository implements BlogRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByPenName(PenName penName) {
         return em.createQuery(
                 "SELECT exists(SELECT 1 FROM Author a WHERE a.penName = :penName)", Boolean.class)
