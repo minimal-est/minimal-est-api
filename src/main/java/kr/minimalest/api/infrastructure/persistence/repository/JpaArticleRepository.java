@@ -7,15 +7,23 @@ import kr.minimalest.api.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class JpaArticleRepository implements ArticleRepository {
-    
+
     private final EntityManager em;
 
     @Override
     public ArticleId save(Article article) {
         em.persist(article);
         return article.getId();
+    }
+
+    @Override
+    public Optional<Article> findById(ArticleId articleId) {
+        Article article = em.find(Article.class, articleId);
+        return Optional.ofNullable(article);
     }
 }
