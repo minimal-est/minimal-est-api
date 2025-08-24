@@ -57,7 +57,7 @@ class AuthControllerTest {
                     .willReturn(authResult);
 
             // when
-            ResultActions perform = mockMvc.perform(post("/api/auth/token")
+            ResultActions perform = mockMvc.perform(post("/api/v1/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(issueTokenRequest)));
 
@@ -76,7 +76,7 @@ class AuthControllerTest {
             IssueTokenRequest request = new IssueTokenRequest("test@", "test1234");
 
             // when
-            ResultActions perform = mockMvc.perform(post("/api/auth/token")
+            ResultActions perform = mockMvc.perform(post("/api/v1/auth/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)));
 
@@ -101,7 +101,7 @@ class AuthControllerTest {
                     .willReturn(result);
 
             // when
-            ResultActions perform = mockMvc.perform(post("/api/auth/token/refresh")
+            ResultActions perform = mockMvc.perform(post("/api/v1/auth/token/refresh")
                     .cookie(new Cookie("refreshToken", "valid-refresh-token")));
 
             // then
@@ -113,7 +113,7 @@ class AuthControllerTest {
         @DisplayName("리프레시 토큰이 없는 경우 401 에러를 반환한다")
         void shouldReturn401WhenNoRefreshToken() throws Exception {
             // when
-            ResultActions perform = mockMvc.perform(post("/api/auth/token/refresh"));
+            ResultActions perform = mockMvc.perform(post("/api/v1/auth/token/refresh"));
 
             // then
             perform.andExpect(status().isUnauthorized());

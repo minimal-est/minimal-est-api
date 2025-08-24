@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/blogs")
+@RequestMapping("/api/v1/blogs")
 public class BlogController {
 
     private final CreateBlog createBlog;

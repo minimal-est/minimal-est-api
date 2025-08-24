@@ -84,7 +84,7 @@ class UserControllerTest {
             given(signUp.exec(argument)).willReturn(result);
 
             // when
-            ResultActions perform = mockMvc.perform(post("/api/users")
+            ResultActions perform = mockMvc.perform(post("/api/v1/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)));
 
@@ -98,7 +98,7 @@ class UserControllerTest {
         @DisplayName("요청 형식이 올바르지 않을 시 400 에러를 반환한다")
         void shouldReturn400WhenRequestFormatIsInvalid() throws Exception {
             // when
-            ResultActions perform = mockMvc.perform(post("/api/users")
+            ResultActions perform = mockMvc.perform(post("/api/v1/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invalidRequest)));
 
@@ -117,7 +117,7 @@ class UserControllerTest {
             given(signUp.exec(argument)).willThrow(EmailDuplicatedException.class);
 
             // when
-            ResultActions perform = mockMvc.perform(post("/api/users")
+            ResultActions perform = mockMvc.perform(post("/api/v1/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)));
 
