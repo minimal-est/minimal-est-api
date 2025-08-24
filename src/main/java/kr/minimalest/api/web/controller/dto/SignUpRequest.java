@@ -15,11 +15,11 @@ public record SignUpRequest (
         String email,
 
         @NotBlank
-        @Size(min = 2)
+        @Size(min = 8, max = 100)
         String password,
 
         @NotBlank
-        @Size(min = 2)
+        @Size(min = 8, max = 100)
         String confirmPassword
 ) {
         public SignUpRequest {
