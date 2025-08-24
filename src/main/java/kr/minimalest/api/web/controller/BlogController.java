@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +32,6 @@ public class BlogController {
     ) {
         CreateBlogArgument argument = CreateBlogArgument.of(jwtUserDetails.getUserId(), createBlogRequest.penName());
         CreateBlogResult result = createBlog.exec(argument);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Map.of("blogId", result.blogId().id()));
     }
 }
