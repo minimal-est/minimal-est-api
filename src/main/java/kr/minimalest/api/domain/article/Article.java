@@ -2,6 +2,7 @@ package kr.minimalest.api.domain.article;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.domain.AggregateRoot;
+import kr.minimalest.api.domain.article.event.ArticleCompletedEvent;
 import kr.minimalest.api.domain.article.event.ArticleUpdatedEvent;
 import kr.minimalest.api.domain.article.event.ArticleCreatedEvent;
 import kr.minimalest.api.domain.blog.BlogId;
@@ -86,6 +87,7 @@ public class Article extends AggregateRoot {
         this.content = validateContent(content);
         this.status = ArticleStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();
+        this.registerEvent(ArticleCompletedEvent.of(id));
     }
 
     private static Title validateTitle(Title title) {
