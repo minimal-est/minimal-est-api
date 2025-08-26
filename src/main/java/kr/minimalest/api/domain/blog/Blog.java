@@ -35,4 +35,9 @@ public class Blog extends AggregateRoot {
         blog.registerEvent(CreatedBlogEvent.of(blog.id, blog.author.getPenName()));
         return blog;
     }
+
+    public boolean isOwnedBy(UserId userId) {
+        if (userId == null) return false;
+        return author.getUserId().equals(userId);
+    }
 }

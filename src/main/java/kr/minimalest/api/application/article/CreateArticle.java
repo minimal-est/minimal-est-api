@@ -4,7 +4,6 @@ import kr.minimalest.api.application.common.annotation.Business;
 import kr.minimalest.api.domain.article.Article;
 import kr.minimalest.api.domain.article.ArticleId;
 import kr.minimalest.api.domain.article.repository.ArticleRepository;
-import kr.minimalest.api.domain.blog.BlogId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateArticle {
 
     private final ArticleRepository articleRepository;
-    private final BlogResolver blogResolver;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public CreateArticleResult exec(CreateArticleArgument argument) {
-        BlogId blogId = blogResolver.getBlogId(argument.userId());
-        Article article = Article.create(blogId);
+        Article article = Article.create(argument.blogId());
         ArticleId savedArticleId = articleRepository.save(article);
 
         publishEvent(article);

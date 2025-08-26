@@ -9,6 +9,7 @@ import kr.minimalest.api.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Business
@@ -18,6 +19,7 @@ public class CompleteArticle {
     private final ArticleRepository articleRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public void exec(CompleteArticleArgument arg) {
         Article article = findArticle(arg.articleId());
         completeArticleAndPublishEvent(article);
@@ -32,8 +34,11 @@ public class CompleteArticle {
         try {
             article.complete();
             publishEvent(article);
+        } catch (IllegalArgumentException e) {
+            log.error("글ID: {}", article.getId(), e);
+            throw new ArticleCompleteFailException(e.getMessage(), e);
         } catch (Exception e) {
-            log.error("글 완료 처리 실패: {}", article.getId(), e);
+            log.error("글ID({}): {}", article.getStatus(), article.getId(), e);
             throw new ArticleCompleteFailException("글 완료 처리 중 오류가 발생했습니다.", e);
         }
     }

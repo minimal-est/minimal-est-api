@@ -2,8 +2,11 @@ package kr.minimalest.api.application.article;
 
 import kr.minimalest.api.application.common.annotation.Business;
 import kr.minimalest.api.application.exception.ArticleNotFoundException;
+import kr.minimalest.api.application.exception.ArticleStateException;
 import kr.minimalest.api.domain.article.Article;
 import kr.minimalest.api.domain.article.ArticleId;
+import kr.minimalest.api.domain.article.Content;
+import kr.minimalest.api.domain.article.Title;
 import kr.minimalest.api.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,8 +22,19 @@ public class UpdateArticle {
     @Transactional
     public void exec(UpdateArticleArgument arg) {
         Article article = findArticle(arg.articleId());
-        article.update(arg.title(), arg.content());
-        publishEvent(article);
+        Title title = Title.of(arg.title());
+        Content content = Content.of(arg.content());
+
+        updateArticleAndPublishEvent(article, title, content);
+    }
+
+    private void updateArticleAndPublishEvent(Article article, Title title, Content content) {
+        try {
+            article.update(title, content);
+            publishEvent(article);
+        } catch (Exception e) {
+            throw new ArticleStateException("글을 수정할 수 없는 상태입니다.", e);
+        }
     }
 
     private Article findArticle(ArticleId articleId) {
