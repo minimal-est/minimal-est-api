@@ -6,7 +6,7 @@ import kr.minimalest.api.application.user.SignUp;
 import kr.minimalest.api.application.user.SignUpArgument;
 import kr.minimalest.api.application.user.SignUpResult;
 import kr.minimalest.api.domain.user.UserId;
-import kr.minimalest.api.web.controller.dto.SignUpRequest;
+import kr.minimalest.api.web.controller.dto.request.SignUpRequest;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

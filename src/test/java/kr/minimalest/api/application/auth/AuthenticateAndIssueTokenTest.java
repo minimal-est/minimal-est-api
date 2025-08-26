@@ -40,9 +40,7 @@ class AuthenticateAndIssueTokenTest {
     private static class AuthTokenFixture {
         private final TokenValidityInMills refreshTokenValidityInMills = TokenValidityInMills.ofSeconds(3600);
         private final String validEmail = "test@test.com";
-        private final String invalidEmail = "test@";
         private final String validRawPassword = "test1234";
-        private final String invalidRawPassword = "t";
 
         private final Token generatedAccessToken = Token.of("access-token");
         private final Token generatedRefreshToken = Token.of("refresh-token");
@@ -51,16 +49,8 @@ class AuthenticateAndIssueTokenTest {
             return AuthenticateAndIssueTokenArgument.of(validEmail, validRawPassword);
         }
 
-        public AuthenticateAndIssueTokenArgument getArgumentWithInvalidEmail() {
-            return AuthenticateAndIssueTokenArgument.of(invalidEmail, validRawPassword);
-        }
-
-        public AuthenticateAndIssueTokenArgument getArgumentWithInvalidRawPassword() {
-            return AuthenticateAndIssueTokenArgument.of(validEmail, invalidRawPassword);
-        }
-
         public User createAuthenticatedUser() {
-            return User.signUp(Email.of(invalidEmail), Password.of(invalidRawPassword));
+            return User.signUp(Email.of(validEmail), Password.of(validRawPassword));
         }
     }
 
@@ -96,36 +86,19 @@ class AuthenticateAndIssueTokenTest {
         }
 
         @Test
-        @DisplayName("이메일이 존재하지 않으면 예외가 발생한다")
-        void shouldThrowExceptionWhenEmailNotFound() {
-            // given
-            AuthTokenFixture fixture = new AuthTokenFixture();
-
-            given(userAuthenticator.authenticate(
-                    Email.of(fixture.invalidEmail),
-                    Password.of(fixture.validRawPassword)
-            )).willThrow(AuthenticateUserException.class);
-
-            // when & then
-            assertThrows(AuthenticateUserException.class, () ->
-                    authenticateAndIssueToken.exec(fixture.getArgumentWithInvalidEmail())
-            );
-        }
-
-        @Test
-        @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다")
-        void shouldThrowExceptionWhenPasswordMismatch() {
+        @DisplayName("인증에 통과하지 못하면 예외가 발생한다")
+        void shouldThrowExceptionWhenAuthenticationFailed() {
             // given
             AuthTokenFixture fixture = new AuthTokenFixture();
 
             given(userAuthenticator.authenticate(
                     Email.of(fixture.validEmail),
-                    Password.of(fixture.invalidRawPassword)
+                    Password.of(fixture.validRawPassword)
             )).willThrow(AuthenticateUserException.class);
 
             // when & then
             assertThrows(AuthenticateUserException.class, () ->
-                    authenticateAndIssueToken.exec(fixture.getArgumentWithInvalidRawPassword())
+                    authenticateAndIssueToken.exec(fixture.getArgument())
             );
         }
     }

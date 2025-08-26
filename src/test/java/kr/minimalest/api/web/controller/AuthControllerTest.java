@@ -8,7 +8,7 @@ import kr.minimalest.api.application.user.AuthenticateAndIssueToken;
 import kr.minimalest.api.application.user.AuthenticateAndIssueTokenResult;
 import kr.minimalest.api.domain.user.Token;
 import kr.minimalest.api.domain.user.TokenValidityInMills;
-import kr.minimalest.api.web.controller.dto.IssueTokenRequest;
+import kr.minimalest.api.web.controller.dto.request.IssueTokenRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
