@@ -1,4 +1,4 @@
-package kr.minimalest.api.web.controller.dto;
+package kr.minimalest.api.web.controller.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

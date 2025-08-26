@@ -1,4 +1,4 @@
-package kr.minimalest.api.web.controller.dto;
+package kr.minimalest.api.web.controller.dto.response;
 
 import org.springframework.util.StringUtils;
 

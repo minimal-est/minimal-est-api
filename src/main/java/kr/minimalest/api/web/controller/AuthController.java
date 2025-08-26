@@ -2,8 +2,8 @@ package kr.minimalest.api.web.controller;
 
 import jakarta.validation.Valid;
 import kr.minimalest.api.application.user.*;
-import kr.minimalest.api.web.controller.dto.AccessTokenResponse;
-import kr.minimalest.api.web.controller.dto.IssueTokenRequest;
+import kr.minimalest.api.web.controller.dto.response.AccessTokenResponse;
+import kr.minimalest.api.web.controller.dto.request.IssueTokenRequest;
 import kr.minimalest.api.web.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

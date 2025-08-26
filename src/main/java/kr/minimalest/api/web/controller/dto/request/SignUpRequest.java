@@ -1,4 +1,4 @@
-package kr.minimalest.api.web.controller.dto;
+package kr.minimalest.api.web.controller.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 public record SignUpRequest (
 
         @NotBlank
-        @Size(min = 2, max = 50)
+        @Size(min = 5, max = 100)
         @Email
         String email,
 

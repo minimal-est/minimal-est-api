@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import kr.minimalest.api.application.user.SignUp;
 import kr.minimalest.api.application.user.SignUpArgument;
 import kr.minimalest.api.application.user.SignUpResult;
-import kr.minimalest.api.web.controller.dto.SignUpRequest;
+import kr.minimalest.api.web.controller.dto.request.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

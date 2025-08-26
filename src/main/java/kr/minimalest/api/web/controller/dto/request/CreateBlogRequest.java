@@ -1,4 +1,4 @@
-package kr.minimalest.api.web.controller.dto;
+package kr.minimalest.api.web.controller.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;

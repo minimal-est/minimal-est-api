@@ -2,7 +2,7 @@ package kr.minimalest.api.web.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import kr.minimalest.api.web.controller.dto.SignUpRequest;
+import kr.minimalest.api.web.controller.dto.request.SignUpRequest;
 import org.springframework.util.Assert;
 
 public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, SignUpRequest> {
