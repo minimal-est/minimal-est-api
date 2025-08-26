@@ -156,4 +156,24 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(409).body(errorResponse);
     }
+
+    @ExceptionHandler(ArticleStateException.class)
+    public ResponseEntity<?> handleArticleState(ArticleStateException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(400),
+                Title.of("글 상태 오류"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(400).body(errorResponse);
+    }
+
+    @ExceptionHandler(ArticleCompleteFailException.class)
+    public ResponseEntity<?> handleArticleCompleteFail(ArticleCompleteFailException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(400),
+                Title.of("글 완료 실패"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(400).body(errorResponse);
+    }
 }
