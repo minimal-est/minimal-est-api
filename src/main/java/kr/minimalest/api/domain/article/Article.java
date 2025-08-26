@@ -54,6 +54,11 @@ public class Article extends AggregateRoot {
 
     private LocalDateTime completedAt;
 
+    public boolean isOwnedBy(BlogId blogId) {
+        if (blogId == null) return false;
+        return this.blogId.equals(blogId);
+    }
+
     public static Article create(BlogId blogId) {
         Article article = new Article(
                 ArticleId.generate(),
