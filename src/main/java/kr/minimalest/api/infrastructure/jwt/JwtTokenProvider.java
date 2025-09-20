@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.application.exception.TokenVerificationException;
+import kr.minimalest.api.domain.user.exception.TokenVerificationException;
 import kr.minimalest.api.domain.user.service.TokenProvider;
 import org.springframework.stereotype.Component;
 
