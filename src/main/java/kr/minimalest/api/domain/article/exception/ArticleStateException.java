@@ -1,4 +1,6 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain.article.exception;
+
+import kr.minimalest.api.domain.BusinessException;
 
 public class ArticleStateException extends BusinessException {
     public ArticleStateException() {

@@ -1,6 +1,8 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain.user.exception;
 
-public class AuthenticateUserException extends BusinessException{
+import kr.minimalest.api.domain.BusinessException;
+
+public class AuthenticateUserException extends BusinessException {
     public AuthenticateUserException() {
         super();
     }

@@ -1,4 +1,4 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain;
 
 public class BusinessException extends RuntimeException{
     public BusinessException() {

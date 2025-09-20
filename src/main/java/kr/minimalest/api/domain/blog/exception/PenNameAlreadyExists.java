@@ -1,6 +1,8 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain.blog.exception;
 
-public class PenNameAlreadyExists extends BusinessException{
+import kr.minimalest.api.domain.BusinessException;
+
+public class PenNameAlreadyExists extends BusinessException {
     public PenNameAlreadyExists() {
         super();
     }

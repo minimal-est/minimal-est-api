@@ -1,4 +1,6 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain.user.exception;
+
+import kr.minimalest.api.domain.BusinessException;
 
 public class InvalidRefreshToken extends BusinessException {
     public InvalidRefreshToken() {

@@ -1,4 +1,6 @@
-package kr.minimalest.api.application.exception;
+package kr.minimalest.api.domain.blog.exception;
+
+import kr.minimalest.api.domain.BusinessException;
 
 public class UserAlreadyHasBlogException extends BusinessException {
     public UserAlreadyHasBlogException() {
