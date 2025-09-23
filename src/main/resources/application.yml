@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   messages:
     basename: messages-validation
   datasource:
@@ -9,6 +12,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      s3:
+        bucket: ${AWS_S3_BUCKET_NAME}
+      region:
+        static: ${AWS_S3_REGION:ap-northeast-2}
 
 auth:
   jwt:
