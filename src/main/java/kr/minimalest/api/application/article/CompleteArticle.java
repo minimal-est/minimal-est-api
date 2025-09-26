@@ -1,11 +1,11 @@
 package kr.minimalest.api.application.article;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.application.exception.ArticleNotFoundException;
-import kr.minimalest.api.application.exception.ArticleCompleteFailException;
-import kr.minimalest.api.domain.article.Article;
-import kr.minimalest.api.domain.article.ArticleId;
-import kr.minimalest.api.domain.article.repository.ArticleRepository;
+import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
+import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
+import kr.minimalest.api.domain.writing.Article;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

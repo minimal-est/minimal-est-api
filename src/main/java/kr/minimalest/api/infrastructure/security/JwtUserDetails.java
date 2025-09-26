@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.UserId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

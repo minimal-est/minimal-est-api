@@ -1,11 +1,10 @@
 package kr.minimalest.api.infrastructure.persistence.repository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.User;
-import kr.minimalest.api.domain.user.UserId;
-import kr.minimalest.api.domain.user.repository.UserRepository;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.User;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.access.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

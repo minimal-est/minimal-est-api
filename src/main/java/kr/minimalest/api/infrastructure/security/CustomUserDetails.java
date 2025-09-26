@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.domain.user.User;
+import kr.minimalest.api.domain.access.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

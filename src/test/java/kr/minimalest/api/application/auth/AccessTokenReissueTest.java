@@ -1,11 +1,11 @@
 package kr.minimalest.api.application.auth;
 
-import kr.minimalest.api.application.exception.InvalidRefreshToken;
+import kr.minimalest.api.domain.access.exception.InvalidRefreshToken;
 import kr.minimalest.api.application.user.AccessTokenReissue;
 import kr.minimalest.api.application.user.AccessTokenReissueArgument;
 import kr.minimalest.api.application.user.AccessTokenReissueResult;
-import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.domain.user.service.TokenProvider;
+import kr.minimalest.api.domain.access.*;
+import kr.minimalest.api.domain.access.service.TokenProvider;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

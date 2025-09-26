@@ -1,12 +1,12 @@
 package kr.minimalest.api.application.blog;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.application.exception.PenNameAlreadyExists;
-import kr.minimalest.api.application.exception.UserAlreadyHasBlogException;
-import kr.minimalest.api.domain.blog.Blog;
-import kr.minimalest.api.domain.blog.BlogId;
-import kr.minimalest.api.domain.blog.PenName;
-import kr.minimalest.api.domain.blog.repository.BlogRepository;
+import kr.minimalest.api.domain.publishing.exception.PenNameAlreadyExists;
+import kr.minimalest.api.domain.publishing.exception.UserAlreadyHasBlogException;
+import kr.minimalest.api.domain.publishing.Blog;
+import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.publishing.PenName;
+import kr.minimalest.api.domain.publishing.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;

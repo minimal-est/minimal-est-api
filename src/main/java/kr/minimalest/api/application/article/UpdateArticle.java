@@ -1,13 +1,13 @@
 package kr.minimalest.api.application.article;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.application.exception.ArticleNotFoundException;
-import kr.minimalest.api.application.exception.ArticleStateException;
-import kr.minimalest.api.domain.article.Article;
-import kr.minimalest.api.domain.article.ArticleId;
-import kr.minimalest.api.domain.article.Content;
-import kr.minimalest.api.domain.article.Title;
-import kr.minimalest.api.domain.article.repository.ArticleRepository;
+import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
+import kr.minimalest.api.domain.writing.exception.ArticleStateException;
+import kr.minimalest.api.domain.writing.Article;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.writing.Content;
+import kr.minimalest.api.domain.writing.Title;
+import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,11 +1,11 @@
 package kr.minimalest.api.application.article;
 
-import kr.minimalest.api.domain.article.Article;
-import kr.minimalest.api.domain.article.ArticleStatus;
-import kr.minimalest.api.domain.article.event.ArticleCreatedEvent;
-import kr.minimalest.api.domain.article.repository.ArticleRepository;
-import kr.minimalest.api.domain.blog.BlogId;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.writing.Article;
+import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.event.ArticleCreatedEvent;
+import kr.minimalest.api.domain.writing.repository.ArticleRepository;
+import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.access.UserId;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

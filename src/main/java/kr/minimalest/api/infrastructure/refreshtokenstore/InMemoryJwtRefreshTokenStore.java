@@ -1,8 +1,8 @@
 package kr.minimalest.api.infrastructure.refreshtokenstore;
 
-import kr.minimalest.api.domain.user.RefreshTokenStore;
-import kr.minimalest.api.domain.user.Token;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.RefreshTokenStore;
+import kr.minimalest.api.domain.access.Token;
+import kr.minimalest.api.domain.access.UserId;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

@@ -1,7 +1,7 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.repository.UserRepository;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
 package kr.minimalest.api.web;
 
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

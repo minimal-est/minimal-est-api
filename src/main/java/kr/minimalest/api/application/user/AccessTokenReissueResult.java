@@ -1,6 +1,6 @@
 package kr.minimalest.api.application.user;
 
-import kr.minimalest.api.domain.user.Token;
+import kr.minimalest.api.domain.access.Token;
 
 public record AccessTokenReissueResult(Token accessToken) {
 

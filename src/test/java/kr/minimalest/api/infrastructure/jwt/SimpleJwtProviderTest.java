@@ -2,8 +2,8 @@ package kr.minimalest.api.infrastructure.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.application.exception.TokenVerificationException;
+import kr.minimalest.api.domain.access.*;
+import kr.minimalest.api.domain.access.exception.TokenVerificationException;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

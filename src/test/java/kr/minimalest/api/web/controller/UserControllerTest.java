@@ -1,11 +1,11 @@
 package kr.minimalest.api.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.minimalest.api.application.exception.EmailDuplicatedException;
+import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
 import kr.minimalest.api.application.user.SignUp;
 import kr.minimalest.api.application.user.SignUpArgument;
 import kr.minimalest.api.application.user.SignUpResult;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.web.controller.dto.request.SignUpRequest;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;

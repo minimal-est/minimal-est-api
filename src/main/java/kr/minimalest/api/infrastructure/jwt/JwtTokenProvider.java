@@ -4,9 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.domain.user.exception.TokenVerificationException;
-import kr.minimalest.api.domain.user.service.TokenProvider;
+import kr.minimalest.api.domain.access.*;
+import kr.minimalest.api.domain.access.exception.TokenVerificationException;
+import kr.minimalest.api.domain.access.service.TokenProvider;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;

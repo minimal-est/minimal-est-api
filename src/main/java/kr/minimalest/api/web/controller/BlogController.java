@@ -5,13 +5,16 @@ import kr.minimalest.api.application.article.*;
 import kr.minimalest.api.application.blog.CreateBlog;
 import kr.minimalest.api.application.blog.CreateBlogArgument;
 import kr.minimalest.api.application.blog.CreateBlogResult;
-import kr.minimalest.api.domain.article.ArticleId;
-import kr.minimalest.api.domain.blog.BlogId;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import kr.minimalest.api.web.controller.dto.request.CreateBlogRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateArticleRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +30,12 @@ import java.util.UUID;
 public class BlogController {
 
     private final CreateBlog createBlog;
+
     private final CreateArticle createArticle;
     private final UpdateArticle updateArticle;
     private final CompleteArticle completeArticle;
+
+    private final FindDraftArticles findDraftArticles;
 
     @PostMapping
     public ResponseEntity<?> createBlog(
@@ -93,5 +99,22 @@ public class BlogController {
         return ResponseEntity.ok(
                 Map.of("articleId", articleId)
         );
+    }
+
+    @GetMapping("/{blogId}/articles/completed")
+    public ResponseEntity<?> findCompletedArticles() {
+        return null;
+    }
+
+    @PreAuthorize("#authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
+    @GetMapping("/{blogId}/articles/draft")
+    public ResponseEntity<?> findDraftArticles(
+            @PathVariable UUID blogId,
+            @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        FindDraftArticlesArgument argument = new FindDraftArticlesArgument(BlogId.of(blogId), pageable);
+        FindRecommendArticlesResult result = findDraftArticles.exec(argument);
+        return ResponseEntity.ok(Map.of("articleSummaries", result));
     }
 }

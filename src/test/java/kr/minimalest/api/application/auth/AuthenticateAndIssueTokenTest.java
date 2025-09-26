@@ -1,12 +1,12 @@
 package kr.minimalest.api.application.auth;
 
-import kr.minimalest.api.application.exception.AuthenticateUserException;
+import kr.minimalest.api.domain.access.exception.AuthenticateUserException;
 import kr.minimalest.api.application.user.AuthenticateAndIssueToken;
 import kr.minimalest.api.application.user.AuthenticateAndIssueTokenArgument;
 import kr.minimalest.api.application.user.AuthenticateAndIssueTokenResult;
-import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.domain.user.service.TokenProvider;
-import kr.minimalest.api.domain.user.service.UserAuthenticator;
+import kr.minimalest.api.domain.access.*;
+import kr.minimalest.api.domain.access.service.TokenProvider;
+import kr.minimalest.api.domain.access.service.UserAuthenticator;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

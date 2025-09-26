@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.event;
 
-import kr.minimalest.api.domain.blog.event.CreatedBlogEvent;
+import kr.minimalest.api.domain.publishing.event.CreatedBlogEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

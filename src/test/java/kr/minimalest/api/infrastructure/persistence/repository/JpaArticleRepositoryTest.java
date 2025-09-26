@@ -1,15 +1,17 @@
 package kr.minimalest.api.infrastructure.persistence.repository;
 
 import jakarta.persistence.EntityManager;
-import kr.minimalest.api.domain.article.Article;
-import kr.minimalest.api.domain.article.ArticleId;
-import kr.minimalest.api.domain.blog.Blog;
-import kr.minimalest.api.domain.blog.BlogId;
-import kr.minimalest.api.domain.blog.PenName;
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.Password;
-import kr.minimalest.api.domain.user.User;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.writing.Article;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.writing.repository.ArticleRepository;
+import kr.minimalest.api.domain.publishing.Blog;
+import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.publishing.PenName;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.Password;
+import kr.minimalest.api.domain.access.User;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.infrastructure.persistence.repository.adapter.ArticleRepositoryAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,14 +26,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@Import(JpaArticleRepository.class)
+@Import(ArticleRepositoryAdapter.class)
 class JpaArticleRepositoryTest {
 
     @Autowired
     EntityManager em;
 
     @Autowired
-    JpaArticleRepository articleRepository;
+    ArticleRepository articleRepository;
 
     UserId savedUserId;
 

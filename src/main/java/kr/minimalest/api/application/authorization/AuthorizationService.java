@@ -1,10 +1,10 @@
 package kr.minimalest.api.application.authorization;
 
-import kr.minimalest.api.domain.article.ArticleId;
-import kr.minimalest.api.domain.article.repository.ArticleRepository;
-import kr.minimalest.api.domain.blog.BlogId;
-import kr.minimalest.api.domain.blog.repository.BlogRepository;
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.publishing.repository.BlogRepository;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

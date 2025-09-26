@@ -1,6 +1,6 @@
 package kr.minimalest.api.application.blog;
 
-import kr.minimalest.api.domain.user.UserId;
+import kr.minimalest.api.domain.access.UserId;
 import org.springframework.util.Assert;
 
 public record CreateBlogArgument(UserId userId, String penName) {

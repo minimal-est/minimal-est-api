@@ -1,7 +1,7 @@
 package kr.minimalest.api.infrastructure.service;
 
-import kr.minimalest.api.domain.user.Password;
-import kr.minimalest.api.domain.user.service.PasswordService;
+import kr.minimalest.api.domain.access.Password;
+import kr.minimalest.api.domain.access.service.PasswordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

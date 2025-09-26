@@ -1,6 +1,6 @@
 package kr.minimalest.api.application.article;
 
-import kr.minimalest.api.domain.article.ArticleId;
+import kr.minimalest.api.domain.writing.ArticleId;
 import org.springframework.util.Assert;
 
 public record CompleteArticleArgument(ArticleId articleId) {

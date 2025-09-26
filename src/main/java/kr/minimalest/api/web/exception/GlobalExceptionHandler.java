@@ -1,7 +1,14 @@
 package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kr.minimalest.api.application.exception.*;
+import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
+import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
+import kr.minimalest.api.domain.writing.exception.ArticleStateException;
+import kr.minimalest.api.domain.publishing.exception.PenNameAlreadyExists;
+import kr.minimalest.api.domain.publishing.exception.UserAlreadyHasBlogException;
+import kr.minimalest.api.domain.access.exception.AuthenticateUserException;
+import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
+import kr.minimalest.api.domain.access.exception.InvalidRefreshToken;
 import kr.minimalest.api.web.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +18,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
@@ -37,10 +45,10 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(
                 Status.of(404),
                 Title.of("찾을 수 없음"),
-                Detail.of("해당 경로의 리소스가 존재하지 않습니다.")
+                Detail.of("해당 리소스가 존재하지 않습니다.")
         );
 
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.status(404).body(errorResponse);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -82,6 +90,21 @@ public class GlobalExceptionHandler {
                 Title.of("입력값 검증 실패"),
                 Detail.of("하나 이상의 필드가 유효하지 않습니다."),
                 Properties.of("errors", errors)
+        );
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String mismatchPropertyName = e.getName();
+        String requestPropertyTypeName = e.getParameter().getParameterType().getSimpleName();
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(400),
+                Title.of("올바르지 않은 요청 타입"),
+                Detail.of("요청 타입이 올바르지 않습니다: "
+                        + mismatchPropertyName + "의 타입은 "
+                        + requestPropertyTypeName + "여야 합니다.")
         );
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -175,5 +198,25 @@ public class GlobalExceptionHandler {
                 Detail.of(e.getMessage())
         );
         return ResponseEntity.status(400).body(errorResponse);
+    }
+
+    @ExceptionHandler(ArticleNotFoundException.class)
+    public ResponseEntity<?> handleArticleNotFound(ArticleNotFoundException e) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(404),
+                Title.of("글을 찾을 수 없음"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(404).body(errorResponse);
+    }
+    @ExceptionHandler(FileException.class)
+    public ResponseEntity<?> handleFileException(FileException e) {
+        int statusCode = e.getOverridableStatusCode();
+        ErrorResponse errorResponse = ErrorResponse.of(
+                Status.of(statusCode),
+                Title.of("파일 관련 오류"),
+                Detail.of(e.getMessage())
+        );
+        return ResponseEntity.status(statusCode).body(errorResponse);
     }
 }

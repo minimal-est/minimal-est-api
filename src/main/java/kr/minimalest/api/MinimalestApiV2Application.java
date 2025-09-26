@@ -1,14 +1,13 @@
 package kr.minimalest.api;
 
-import kr.minimalest.api.infrastructure.jwt.JwtProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
-@EnableConfigurationProperties(JwtProperties.class)
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class MinimalestApiV2Application {
 
     public static void main(String[] args) {

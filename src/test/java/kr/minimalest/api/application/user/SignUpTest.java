@@ -1,12 +1,12 @@
 package kr.minimalest.api.application.user;
 
-import kr.minimalest.api.application.exception.EmailDuplicatedException;
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.Password;
-import kr.minimalest.api.domain.user.User;
-import kr.minimalest.api.domain.user.event.UserSignedUpEvent;
-import kr.minimalest.api.domain.user.repository.UserRepository;
-import kr.minimalest.api.domain.user.service.PasswordService;
+import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.Password;
+import kr.minimalest.api.domain.access.User;
+import kr.minimalest.api.domain.access.event.UserSignedUpEvent;
+import kr.minimalest.api.domain.access.repository.UserRepository;
+import kr.minimalest.api.domain.access.service.PasswordService;
 import lombok.Getter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

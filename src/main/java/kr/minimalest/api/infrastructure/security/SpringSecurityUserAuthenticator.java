@@ -1,10 +1,10 @@
 package kr.minimalest.api.infrastructure.security;
 
-import kr.minimalest.api.domain.user.service.UserAuthenticator;
-import kr.minimalest.api.domain.user.exception.AuthenticateUserException;
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.Password;
-import kr.minimalest.api.domain.user.User;
+import kr.minimalest.api.domain.access.service.UserAuthenticator;
+import kr.minimalest.api.domain.access.exception.AuthenticateUserException;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.Password;
+import kr.minimalest.api.domain.access.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

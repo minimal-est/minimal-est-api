@@ -1,13 +1,13 @@
 package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.application.exception.EmailDuplicatedException;
-import kr.minimalest.api.domain.user.Email;
-import kr.minimalest.api.domain.user.Password;
-import kr.minimalest.api.domain.user.User;
-import kr.minimalest.api.domain.user.UserId;
-import kr.minimalest.api.domain.user.repository.UserRepository;
-import kr.minimalest.api.domain.user.service.PasswordService;
+import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
+import kr.minimalest.api.domain.access.Email;
+import kr.minimalest.api.domain.access.Password;
+import kr.minimalest.api.domain.access.User;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.access.repository.UserRepository;
+import kr.minimalest.api.domain.access.service.PasswordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

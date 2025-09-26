@@ -1,12 +1,12 @@
 package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.application.exception.InvalidRefreshToken;
-import kr.minimalest.api.domain.user.RefreshTokenStore;
-import kr.minimalest.api.domain.user.Token;
-import kr.minimalest.api.domain.user.TokenPayload;
-import kr.minimalest.api.domain.user.UserId;
-import kr.minimalest.api.domain.user.service.TokenProvider;
+import kr.minimalest.api.domain.access.exception.InvalidRefreshToken;
+import kr.minimalest.api.domain.access.RefreshTokenStore;
+import kr.minimalest.api.domain.access.Token;
+import kr.minimalest.api.domain.access.TokenPayload;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.access.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 
 @Business

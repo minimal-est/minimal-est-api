@@ -1,6 +1,6 @@
 package kr.minimalest.api.infrastructure.event;
 
-import kr.minimalest.api.domain.user.event.UserSignedUpEvent;
+import kr.minimalest.api.domain.access.event.UserSignedUpEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

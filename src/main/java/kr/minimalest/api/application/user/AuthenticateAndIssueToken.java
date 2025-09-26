@@ -1,9 +1,9 @@
 package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.domain.user.*;
-import kr.minimalest.api.domain.user.service.TokenProvider;
-import kr.minimalest.api.domain.user.service.UserAuthenticator;
+import kr.minimalest.api.domain.access.*;
+import kr.minimalest.api.domain.access.service.TokenProvider;
+import kr.minimalest.api.domain.access.service.UserAuthenticator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,7 @@
 package kr.minimalest.api.application.user;
 
-import kr.minimalest.api.domain.user.Token;
-import kr.minimalest.api.domain.user.TokenValidityInMills;
+import kr.minimalest.api.domain.access.Token;
+import kr.minimalest.api.domain.access.TokenValidityInMills;
 
 public record AuthenticateAndIssueTokenResult(
         Token accessToken,
