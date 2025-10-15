@@ -48,6 +48,12 @@ class BlogControllerTest {
     @MockitoBean
     CompleteArticle completeArticle;
 
+    @MockitoBean
+    FindDraftArticles findDraftArticles;
+
+    @MockitoBean
+    FindCompletedArticles findCompletedArticles;
+
     @Nested
     @DisplayName("블로그 생성 API")
     class CreateBlogAPI {
