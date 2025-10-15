@@ -23,10 +23,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class FindDraftArticlesTest {
+class FindCompletedArticlesTest {
 
     @InjectMocks
-    private FindDraftArticles findDraftArticles;
+    private FindCompletedArticles findCompletedArticles;
 
     @Mock
     private ArticleRepository articleRepository;
@@ -43,7 +43,7 @@ class FindDraftArticlesTest {
         int pageSize = 3;
         BlogId blogId = BlogId.generate();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        FindDraftArticlesArgument argument = new FindDraftArticlesArgument(blogId, pageable);
+        FindCompletedArticlesArgument argument = new FindCompletedArticlesArgument(blogId, pageable);
 
         List<Article> articles = new ArrayList<>();
         for (int i = 0; i < totalElements; i++) {
@@ -61,11 +61,11 @@ class FindDraftArticlesTest {
 
         Page<ArticleSummary> summariesPage = new PageImpl<>(expectedSummaries, pageable, articles.size());
 
-        given(articleRepository.findAllDraftedByBlogId(blogId, pageable)).willReturn(articlesPage);
+        given(articleRepository.findAllCompletedByBlogId(blogId, pageable)).willReturn(articlesPage);
         given(articleSummaryCreator.createWithPage(eq(articlesPage))).willReturn(summariesPage);
 
         // when
-        FindDraftArticlesResult result = findDraftArticles.exec(argument);
+        FindCompletedArticlesResult result = findCompletedArticles.exec(argument);
 
         // then
         assertThat(result.articleSummaries().getTotalPages()).isEqualTo((int)Math.ceil((double) totalElements / pageSize));
