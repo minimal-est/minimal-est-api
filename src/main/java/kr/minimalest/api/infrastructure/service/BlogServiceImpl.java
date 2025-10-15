@@ -2,14 +2,15 @@ package kr.minimalest.api.infrastructure.service;
 
 import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
-import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
-import kr.minimalest.api.domain.publishing.service.BlogService;
 import kr.minimalest.api.domain.publishing.PenName;
+import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
+import kr.minimalest.api.domain.publishing.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,8 +30,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Map<BlogId, PenName> getMappingPenNames(List<BlogId> blogIds) {
-        List<Blog> blogs = blogRepository.findAllByIds(blogIds);
+    public Map<BlogId, PenName> getMappingPenNames(Collection<BlogId> blogIds) {
+        List<Blog> blogs = blogRepository.findAllByIds(blogIds.stream().toList());
 
         return blogs.stream()
                 .collect(Collectors.toMap(Blog::getId, Blog::getPenName));

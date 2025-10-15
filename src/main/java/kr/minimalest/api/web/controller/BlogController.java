@@ -36,6 +36,7 @@ public class BlogController {
     private final CompleteArticle completeArticle;
 
     private final FindDraftArticles findDraftArticles;
+    private final FindCompletedArticles findCompletedArticles;
 
     @PostMapping
     public ResponseEntity<?> createBlog(
@@ -101,20 +102,27 @@ public class BlogController {
         );
     }
 
+    @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @GetMapping("/{blogId}/articles/completed")
-    public ResponseEntity<?> findCompletedArticles() {
-        return null;
+    public ResponseEntity<?> findCompletedArticles(
+            @PathVariable UUID blogId,
+            @PageableDefault(sort = "completedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        FindCompletedArticlesArgument argument = new FindCompletedArticlesArgument(BlogId.of(blogId), pageable);
+        FindCompletedArticlesResult result = findCompletedArticles.exec(argument);
+        return ResponseEntity.ok(result);
     }
 
-    @PreAuthorize("#authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
+    @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @GetMapping("/{blogId}/articles/draft")
     public ResponseEntity<?> findDraftArticles(
             @PathVariable UUID blogId,
-            @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
         FindDraftArticlesArgument argument = new FindDraftArticlesArgument(BlogId.of(blogId), pageable);
-        FindRecommendArticlesResult result = findDraftArticles.exec(argument);
-        return ResponseEntity.ok(Map.of("articleSummaries", result));
+        FindDraftArticlesResult result = findDraftArticles.exec(argument);
+        return ResponseEntity.ok(result);
     }
 }

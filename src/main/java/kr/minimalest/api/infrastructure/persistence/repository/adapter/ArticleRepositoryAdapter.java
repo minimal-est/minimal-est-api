@@ -7,6 +7,7 @@ import kr.minimalest.api.domain.writing.ArticleStatus;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import kr.minimalest.api.infrastructure.persistence.repository.SpringDataJpaArticleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,7 +44,12 @@ public class ArticleRepositoryAdapter implements ArticleRepository {
     }
 
     @Override
-    public List<Article> findAllDraftedByBlogId(BlogId blogId, Pageable pageable) {
-        return springDataJpaArticleRepository.findAllByStatusAndBlogId(ArticleStatus.DRAFT, blogId, pageable).getContent();
+    public Page<Article> findAllDraftedByBlogId(BlogId blogId, Pageable pageable) {
+        return springDataJpaArticleRepository.findAllByStatusAndBlogId(ArticleStatus.DRAFT, blogId, pageable);
+    }
+
+    @Override
+    public Page<Article> findAllCompletedByBlogId(BlogId blogId, Pageable pageable) {
+        return springDataJpaArticleRepository.findAllByStatusAndBlogId(ArticleStatus.COMPLETED, blogId, pageable);
     }
 }

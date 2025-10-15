@@ -8,14 +8,14 @@ import org.springframework.data.domain.Page;
 
 @Business
 @RequiredArgsConstructor
-public class FindDraftArticles {
+public class FindCompletedArticles {
 
     private final ArticleRepository articleRepository;
     private final ArticleSummaryCreator articleSummaryCreator;
 
-    public FindDraftArticlesResult exec(FindDraftArticlesArgument argument) {
-        Page<Article> articles = articleRepository.findAllDraftedByBlogId(argument.blogId(), argument.pageable());
+    public FindCompletedArticlesResult exec(FindCompletedArticlesArgument argument) {
+        Page<Article> articles = articleRepository.findAllCompletedByBlogId(argument.blogId(), argument.pageable());
         Page<ArticleSummary> articleSummaries = articleSummaryCreator.createWithPage(articles);
-        return new FindDraftArticlesResult(articleSummaries);
+        return new FindCompletedArticlesResult(articleSummaries);
     }
 }

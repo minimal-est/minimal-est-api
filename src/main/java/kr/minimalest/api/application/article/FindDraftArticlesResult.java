@@ -1,6 +1,8 @@
 package kr.minimalest.api.application.article;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
-public record FindDraftArticlesResult(List<ArticleSummary> articleSummaries) {
+public record FindDraftArticlesResult(
+        Page<ArticleSummary> articleSummaries
+) {
 }
