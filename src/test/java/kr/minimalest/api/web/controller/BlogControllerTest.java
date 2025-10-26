@@ -2,9 +2,10 @@ package kr.minimalest.api.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.minimalest.api.application.article.*;
-import kr.minimalest.api.application.blog.CreateBlog;
-import kr.minimalest.api.application.blog.CreateBlogArgument;
-import kr.minimalest.api.application.blog.CreateBlogResult;
+import kr.minimalest.api.application.blog.*;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.Blog;
+import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.publishing.BlogId;
@@ -19,11 +20,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,6 +39,9 @@ class BlogControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @MockitoBean
+    FindBlog findBlog;
 
     @MockitoBean
     CreateBlog createBlog;
@@ -53,6 +60,37 @@ class BlogControllerTest {
 
     @MockitoBean
     FindCompletedArticles findCompletedArticles;
+
+    @Nested
+    @DisplayName("블로그ID 찾기 API")
+    class FindBlogAPI {
+
+        @Test
+        @DisplayName("사용자 ID로 블로그 정보를 찾는다")
+        @WithMockJwtUser
+        void shouldFindBlogWhenValidRequest() throws Exception {
+            // given
+            UUID mockUserUUID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+            UserId mockUserId = UserId.of(mockUserUUID);
+            PenName penName = PenName.of("test-1234");
+            Blog mockBlog = Blog.create(mockUserId, penName);
+            FindBlogArgument argument = new FindBlogArgument(mockUserId);
+            FindBlogResult result = new FindBlogResult(mockBlog.getId(), mockUserId, penName);
+            given(findBlog.exec(argument)).willReturn(result);
+
+            // when
+            ResultActions perform = mockMvc.perform(get("/api/v1/blogs/self"));
+
+            // then
+            perform.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.blogId").value(mockBlog.getId().id().toString()))
+                    .andExpect(jsonPath("$.userId").value(mockUserId.id().toString()))
+                    .andExpect(jsonPath("$.penName").value(penName.value()))
+                    .andDo(print());
+
+            verify(findBlog).exec(argument);
+        }
+    }
 
     @Nested
     @DisplayName("블로그 생성 API")

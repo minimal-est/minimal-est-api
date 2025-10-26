@@ -107,7 +107,7 @@ class BlogRepositoryAdapterTest {
 
             // then
             assertThat(optionalBlog).isPresent();
-            assertThat(optionalBlog.get().getAuthor().getPenName().name()).isEqualTo("31n5ang");
+            assertThat(optionalBlog.get().getAuthor().getPenName().value()).isEqualTo("31n5ang");
         }
 
         @Test
@@ -125,7 +125,7 @@ class BlogRepositoryAdapterTest {
 
             // then
             assertThat(optionalBlog).isPresent();
-            assertThat(optionalBlog.get().getAuthor().getPenName().name()).isEqualTo("31n5ang");
+            assertThat(optionalBlog.get().getAuthor().getPenName().value()).isEqualTo("31n5ang");
         }
     }
 
