@@ -25,6 +25,10 @@ public class Author {
     private UserId userId;
 
     @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "pen_name", nullable = false)
+    )
     private PenName penName;
 
     static Author create(UserId userId, PenName penName) {

@@ -2,9 +2,7 @@ package kr.minimalest.api.web.controller;
 
 import jakarta.validation.Valid;
 import kr.minimalest.api.application.article.*;
-import kr.minimalest.api.application.blog.CreateBlog;
-import kr.minimalest.api.application.blog.CreateBlogArgument;
-import kr.minimalest.api.application.blog.CreateBlogResult;
+import kr.minimalest.api.application.blog.*;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
@@ -29,6 +27,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/blogs")
 public class BlogController {
 
+    private final FindBlog findBlog;
     private final CreateBlog createBlog;
 
     private final CreateArticle createArticle;
@@ -37,6 +36,20 @@ public class BlogController {
 
     private final FindDraftArticles findDraftArticles;
     private final FindCompletedArticles findCompletedArticles;
+
+    // 현재 로그인한 사용자의 BlogId를 반환합니다.
+    @GetMapping("self")
+    public ResponseEntity<?> findBlog(
+                @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        FindBlogArgument argument = new FindBlogArgument(jwtUserDetails.getUserId());
+        FindBlogResult result = findBlog.exec(argument);
+        return ResponseEntity.ok(Map.of(
+                "blogId", result.blogId().id(),
+                "userId", result.userId().id(),
+                "penName", result.penName().value()
+        ));
+    }
 
     @PostMapping
     public ResponseEntity<?> createBlog(

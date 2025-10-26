@@ -38,7 +38,7 @@ public class BlogRepositoryAdapter implements BlogRepository {
     @Override
     @Transactional(readOnly = true)
     public Optional<Blog> findByUserId(UserId userId) {
-        return em.createQuery("SELECT b FROM Blog b WHERE b.author.userId = :userId", Blog.class)
+        return em.createQuery("SELECT b FROM Blog b JOIN FETCH b.author a WHERE b.author.userId = :userId", Blog.class)
                 .setParameter("userId", userId)
                 .getResultStream()
                 .findFirst();
