@@ -3,8 +3,11 @@ package kr.minimalest.api.application.article;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.Content;
+import kr.minimalest.api.domain.writing.Title;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -35,11 +38,19 @@ public record ArticleSummary(
     }
 
     public static ArticleSummary from(Article article, PenName penName) {
+        String title = Optional.ofNullable(article.getTitle())
+                .map(Title::value)
+                .orElse("");
+
+        String content = Optional.ofNullable(article.getContent())
+                .map(Content::value)
+                .orElse("");
+
         return new ArticleSummary(
                 article.getRawId(),
                 penName.value(),
-                article.getTitle().value(),
-                article.getContent().value(),
+                title,
+                content,
                 article.getCompletedAt(),
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
