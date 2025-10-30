@@ -16,6 +16,8 @@ public interface BlogRepository {
 
     Optional<Blog> findByUserId(UserId userId);
 
+    Optional<Blog> findByPenName(PenName penName);
+
     List<Blog> findAllByIds(List<BlogId> blogIds);
 
     boolean hasBlogByUserId(UserId userId);

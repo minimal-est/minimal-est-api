@@ -28,6 +28,7 @@ import java.util.UUID;
 public class BlogController {
 
     private final FindBlog findBlog;
+    private final FindBlogSelf findBlogSelf;
     private final CreateBlog createBlog;
 
     private final CreateArticle createArticle;
@@ -39,14 +40,26 @@ public class BlogController {
 
     // 현재 로그인한 사용자의 BlogId를 반환합니다.
     @GetMapping("self")
-    public ResponseEntity<?> findBlog(
-                @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    public ResponseEntity<?> findBlogSelf(
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
-        FindBlogArgument argument = new FindBlogArgument(jwtUserDetails.getUserId());
-        FindBlogResult result = findBlog.exec(argument);
+        FindBlogSelfArgument argument = new FindBlogSelfArgument(jwtUserDetails.getUserId());
+        FindBlogSelfResult result = findBlogSelf.exec(argument);
         return ResponseEntity.ok(Map.of(
                 "blogId", result.blogId().id(),
                 "userId", result.userId().id(),
+                "penName", result.penName().value()
+        ));
+    }
+
+    @GetMapping("{penName}")
+    public ResponseEntity<?> findBlog(
+            @PathVariable String penName
+    ) {
+        FindBlogArgument argument = new FindBlogArgument(penName);
+        FindBlogResult result = findBlog.exec(argument);
+        return ResponseEntity.ok(Map.of(
+                "blogId", result.blogId().id(),
                 "penName", result.penName().value()
         ));
     }
