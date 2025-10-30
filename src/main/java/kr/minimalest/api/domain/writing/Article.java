@@ -41,7 +41,7 @@ public class Article extends AggregateRoot {
     @Embedded
     @AttributeOverride(
             name = "value",
-            column = @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+            column = @Column(name = "content", columnDefinition = "TEXT", nullable = true)
     )
     private Content content;
 
