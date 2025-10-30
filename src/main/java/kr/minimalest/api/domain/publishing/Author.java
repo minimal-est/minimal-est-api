@@ -27,7 +27,7 @@ public class Author {
     @Embedded
     @AttributeOverride(
             name = "value",
-            column = @Column(name = "pen_name", nullable = false)
+            column = @Column(name = "pen_name", nullable = false, unique = true)
     )
     private PenName penName;
 
