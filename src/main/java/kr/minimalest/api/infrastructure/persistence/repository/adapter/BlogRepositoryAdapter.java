@@ -45,6 +45,15 @@ public class BlogRepositoryAdapter implements BlogRepository {
     }
 
     @Override
+    public Optional<Blog> findByPenName(PenName penName) {
+        return em.createQuery("SELECT b FROM Blog b JOIN FETCH b.author a WHERE b.author.penName = :penName",
+                Blog.class)
+                .setParameter("penName", penName)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
     public List<Blog> findAllByIds(List<BlogId> blogIds) {
         return springDataJpaBlogRepository.findAllById(blogIds);
     }
