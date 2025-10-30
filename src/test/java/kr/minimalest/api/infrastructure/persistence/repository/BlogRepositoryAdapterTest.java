@@ -71,7 +71,7 @@ class BlogRepositoryAdapterTest {
 
     @Nested
     @DisplayName("블로그 조회")
-    class FindBlog {
+    class FindBlogSelf {
 
         @Test
         @DisplayName("사용자 ID로 블로그 존재 유무 True/False를 반환한다")
@@ -108,6 +108,24 @@ class BlogRepositoryAdapterTest {
             // then
             assertThat(optionalBlog).isPresent();
             assertThat(optionalBlog.get().getAuthor().getPenName().value()).isEqualTo("31n5ang");
+        }
+
+        @Test
+        @DisplayName("블로그 PenName으로 블로그를 조회한다")
+        @Transactional
+        void shouldReturnBlogWhenFindBlogByPenName() {
+            // given
+            Blog blog = Blog.create(savedUserId, PenName.of("31n5ang"));
+            em.persist(blog);
+            em.flush();
+            em.clear();
+
+            // when
+            Optional<Blog> optionalBlog = blogRepository.findByPenName(blog.getPenName());
+
+            // then
+            assertThat(optionalBlog).isPresent();
+            assertThat(optionalBlog.get().getPenName().value()).isEqualTo("31n5ang");
         }
 
         @Test

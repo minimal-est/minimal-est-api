@@ -44,6 +44,9 @@ class BlogControllerTest {
     FindBlog findBlog;
 
     @MockitoBean
+    FindBlogSelf findBlogSelf;
+
+    @MockitoBean
     CreateBlog createBlog;
 
     @MockitoBean
@@ -62,21 +65,21 @@ class BlogControllerTest {
     FindCompletedArticles findCompletedArticles;
 
     @Nested
-    @DisplayName("블로그ID 찾기 API")
-    class FindBlogAPI {
+    @DisplayName("블로그 찾기 API")
+    class FindBlogSelfAPI {
 
         @Test
         @DisplayName("사용자 ID로 블로그 정보를 찾는다")
         @WithMockJwtUser
-        void shouldFindBlogWhenValidRequest() throws Exception {
+        void shouldFindBlogSelfWhenValidRequest() throws Exception {
             // given
             UUID mockUserUUID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
             UserId mockUserId = UserId.of(mockUserUUID);
             PenName penName = PenName.of("test-1234");
             Blog mockBlog = Blog.create(mockUserId, penName);
-            FindBlogArgument argument = new FindBlogArgument(mockUserId);
-            FindBlogResult result = new FindBlogResult(mockBlog.getId(), mockUserId, penName);
-            given(findBlog.exec(argument)).willReturn(result);
+            FindBlogSelfArgument argument = new FindBlogSelfArgument(mockUserId);
+            FindBlogSelfResult result = new FindBlogSelfResult(mockBlog.getId(), mockUserId, penName);
+            given(findBlogSelf.exec(argument)).willReturn(result);
 
             // when
             ResultActions perform = mockMvc.perform(get("/api/v1/blogs/self"));
@@ -88,7 +91,28 @@ class BlogControllerTest {
                     .andExpect(jsonPath("$.penName").value(penName.value()))
                     .andDo(print());
 
-            verify(findBlog).exec(argument);
+            verify(findBlogSelf).exec(argument);
+        }
+
+        @Test
+        @DisplayName("블로그 펜네임으로 블로그 정보를 찾는다")
+        void shouldFindBlogWhenValidRequest() throws Exception {
+            // given
+            PenName penName = PenName.of("test");
+            Blog mockBlog = Blog.create(UserId.generate(), penName);
+            FindBlogArgument argument = new FindBlogArgument(penName.value());
+            FindBlogResult result = new FindBlogResult(mockBlog.getId(), mockBlog.getPenName());
+
+            given(findBlog.exec(argument)).willReturn(result);
+
+            // when
+            ResultActions perform = mockMvc.perform(get("/api/v1/blogs/{penName}", penName.value()));
+
+            // then
+            perform.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.blogId").value(mockBlog.getId().id().toString()))
+                    .andExpect(jsonPath("$.penName").value(mockBlog.getPenName().value()))
+                    .andDo(print());
         }
     }
 
