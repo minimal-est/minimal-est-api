@@ -1,7 +1,6 @@
 package kr.minimalest.api.infrastructure.service;
 
 import kr.minimalest.api.domain.engagement.recommendation.RecommendedArticle;
-import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import kr.minimalest.api.domain.engagement.recommendation.ArticleRecommendationService;
@@ -25,7 +24,7 @@ public class SimpleArticleRecommendService implements ArticleRecommendationServi
     @Override
     public List<RecommendedArticle> recommendArticles(int offset, int limit) {
         List<RecommendedArticle> recommendedArticles = new ArrayList<>();
-        List<ArticleId> articleIds = articleRepository.findTopNIdsByOrderByCompletedAtDesc(offset, limit);
+        List<ArticleId> articleIds = articleRepository.findTopNIdsByOrderByPublishedAtDesc(offset, limit);
         for (ArticleId articleId : articleIds) {
             recommendedArticles.add(RecommendedArticle.of(articleId));
         }

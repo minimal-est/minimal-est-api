@@ -1,6 +1,7 @@
 package kr.minimalest.api.application.article;
 
-import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
@@ -41,13 +42,13 @@ class FindCompletedArticlesTest {
         int totalElements = 10;
         int pageNumber = 1;
         int pageSize = 3;
-        BlogId blogId = BlogId.generate();
+        Blog blog = Blog.create(UserId.generate(), PenName.of("test-pen-name"));
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        FindCompletedArticlesArgument argument = new FindCompletedArticlesArgument(blogId, pageable);
+        FindCompletedArticlesArgument argument = new FindCompletedArticlesArgument(blog.getId(), pageable);
 
         List<Article> articles = new ArrayList<>();
         for (int i = 0; i < totalElements; i++) {
-            articles.add(Article.create(blogId));
+            articles.add(Article.create(blog.getId()));
         }
 
         int fromIndex = pageNumber * pageSize;
@@ -56,12 +57,12 @@ class FindCompletedArticlesTest {
         Page<Article> articlesPage = new PageImpl<>(pagedArticles, pageable, articles.size());
 
         List<ArticleSummary> expectedSummaries = pagedArticles.stream()
-                .map(a -> ArticleSummary.from(a, PenName.of("test")))
+                .map(a -> ArticleSummary.from(a, blog.getAuthor()))
                 .toList();
 
         Page<ArticleSummary> summariesPage = new PageImpl<>(expectedSummaries, pageable, articles.size());
 
-        given(articleRepository.findAllCompletedByBlogId(blogId, pageable)).willReturn(articlesPage);
+        given(articleRepository.findAllCompletedByBlogId(blog.getId(), pageable)).willReturn(articlesPage);
         given(articleSummaryCreator.createWithPage(eq(articlesPage))).willReturn(summariesPage);
 
         // when

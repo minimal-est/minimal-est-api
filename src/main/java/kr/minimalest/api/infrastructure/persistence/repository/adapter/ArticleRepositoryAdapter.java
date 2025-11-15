@@ -37,10 +37,9 @@ public class ArticleRepositoryAdapter implements ArticleRepository {
         return springDataJpaArticleRepository.findAllById(articleIds);
     }
 
-    @Override
-    public List<ArticleId> findTopNIdsByOrderByCompletedAtDesc(int page, int limit) {
-        PageRequest pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "completedAt"));
-        return springDataJpaArticleRepository.findTopNIds(pageable);
+    public List<ArticleId> findTopNIdsByOrderByPublishedAtDesc(int page, int limit) {
+        PageRequest pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "publishedAt"));
+        return springDataJpaArticleRepository.findPublishedTopNIds(pageable);
     }
 
     @Override
@@ -50,6 +49,29 @@ public class ArticleRepositoryAdapter implements ArticleRepository {
 
     @Override
     public Page<Article> findAllCompletedByBlogId(BlogId blogId, Pageable pageable) {
-        return springDataJpaArticleRepository.findAllByStatusAndBlogId(ArticleStatus.COMPLETED, blogId, pageable);
+        return springDataJpaArticleRepository.findAllByStatusAndBlogId(ArticleStatus.PUBLISHED, blogId, pageable);
+    }
+
+    @Override
+    public Page<Article> findAllMyArticles(BlogId blogId, ArticleStatus status, String searchKeyword, Pageable pageable) {
+        if (status != null && !searchKeyword.isEmpty()) {
+            // 상태와 검색 키워드 모두 지정
+            return springDataJpaArticleRepository.findAllByBlogIdAndStatusNotAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(
+                    blogId, ArticleStatus.DELETED, searchKeyword, pageable);
+        } else if (status != null) {
+            // 상태만 지정 (DELETED 제외)
+            if (status == ArticleStatus.DELETED) {
+                throw new IllegalArgumentException("DELETED 상태는 조회할 수 없습니다.");
+            }
+            return springDataJpaArticleRepository.findAllByStatusAndBlogId(status, blogId, pageable);
+        } else if (!searchKeyword.isEmpty()) {
+            // 검색 키워드만 지정 (DELETED 제외)
+            return springDataJpaArticleRepository.findAllByBlogIdAndStatusNotAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(
+                    blogId, ArticleStatus.DELETED, searchKeyword, pageable);
+        } else {
+            // 조건 없음 (DELETED 제외하고 모든 글 조회)
+            return springDataJpaArticleRepository.findAllByBlogIdAndStatusNotOrderByUpdatedAtDesc(
+                    blogId, ArticleStatus.DELETED, pageable);
+        }
     }
 }

@@ -5,6 +5,7 @@ import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleStatus;
 import kr.minimalest.api.domain.writing.Content;
+import kr.minimalest.api.domain.writing.Description;
 import kr.minimalest.api.domain.writing.Title;
 import kr.minimalest.api.domain.writing.event.ArticleCompletedEvent;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
@@ -31,10 +32,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CompleteArticleTest {
+class PublishArticleTest {
 
     @InjectMocks
-    CompleteArticle completeArticle;
+    PublishArticle completeArticle;
 
     @Mock
     ArticleRepository articleRepository;
@@ -49,29 +50,29 @@ class CompleteArticleTest {
         private final Article article = Article.create(blogId);
 
         public ArticleFixture() {
-            article.update(Title.of("글의 제목입니다."), Content.of("본문 내용입니다. 테스트입니다."));
+            article.update(Title.of("글의 제목입니다."), Content.of("본문 내용입니다. 테스트입니다."), Description.empty());
         }
 
         public void updateToValidTitleAndContent() {
-            article.update(Title.of("글의 제목입니다."), Content.of("본문 내용입니다. 테스트입니다."));
+            article.update(Title.of("글의 제목입니다."), Content.of("본문 내용입니다. 테스트입니다."), Description.empty());
         }
 
         public void updateToInvalidTitleAndContent() {
-            article.update(Title.of(""), Content.of(""));
+            article.update(Title.of(""), Content.of(""), Description.empty());
         }
 
-        public CompleteArticleArgument getCompleteArticleArgument() {
-            return CompleteArticleArgument.of(article.getId());
+        public PublishArticleArgument getCompleteArticleArgument() {
+            return PublishArticleArgument.of(article.getId());
         }
     }
 
 
     @Nested
     @DisplayName("글 완료 시")
-    class HappyCompleteArticle {
+    class HappyPublishArticle {
 
         @Test
-        @DisplayName("글의 상태가 올바르면 COMPLETED로 변경되고 이벤트를 발행한다")
+        @DisplayName("글의 상태가 올바르면 PUBLISHED로 변경되고 이벤트를 발행한다")
         @Transactional
         void shouldBeCompleted() {
             // given
@@ -85,8 +86,8 @@ class CompleteArticleTest {
             completeArticle.exec(fixture.getCompleteArticleArgument());
 
             // then
-            assertThat(fixture.article.getStatus()).isEqualTo(ArticleStatus.COMPLETED);
-            assertThat(fixture.article.getCompletedAt()).isNotNull();
+            assertThat(fixture.article.getStatus()).isEqualTo(ArticleStatus.PUBLISHED);
+            assertThat(fixture.article.getPublishedAt()).isNotNull();
             verify(eventPublisher, times(1)).publishEvent(any(ArticleCompletedEvent.class));
         }
 

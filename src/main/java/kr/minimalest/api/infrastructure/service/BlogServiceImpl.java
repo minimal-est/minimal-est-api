@@ -1,5 +1,6 @@
 package kr.minimalest.api.infrastructure.service;
 
+import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,5 +37,23 @@ public class BlogServiceImpl implements BlogService {
 
         return blogs.stream()
                 .collect(Collectors.toMap(Blog::getId, Blog::getPenName));
+    }
+
+    @Override
+    public Map<BlogId, Author> getMappingAuthor(Collection<BlogId> blogIds) {
+        List<Blog> blogs = blogRepository.findAllByIds(blogIds.stream().toList());
+
+        return blogs.stream()
+                .collect(Collectors.toMap(Blog::getId, Blog::getAuthor));
+    }
+
+    @Override
+    public Optional<Author> getAuthor(BlogId blogId) {
+        return blogRepository.findAuthorById(blogId);
+    }
+
+    @Override
+    public Optional<Author> getAuthorByPenName(PenName penName) {
+        return blogRepository.findAuthorByPenName(penName);
     }
 }

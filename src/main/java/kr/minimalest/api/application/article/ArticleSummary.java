@@ -1,10 +1,7 @@
 package kr.minimalest.api.application.article;
 
-import kr.minimalest.api.domain.writing.Article;
-import kr.minimalest.api.domain.publishing.PenName;
-import kr.minimalest.api.domain.writing.ArticleStatus;
-import kr.minimalest.api.domain.writing.Content;
-import kr.minimalest.api.domain.writing.Title;
+import kr.minimalest.api.domain.publishing.Author;
+import kr.minimalest.api.domain.writing.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -16,45 +13,61 @@ import java.util.UUID;
  */
 public record ArticleSummary(
         UUID articleId,
-        String penName,
         String title,
-        String content,
-        LocalDateTime completedAt,
+        String description,
+        LocalDateTime publishedAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        ArticleStatus status
+        ArticleStatus status,
+        AuthorInfo author
 ) {
     public static ArticleSummary of(
             UUID articleId,
-            String penName,
             String title,
-            String content,
-            LocalDateTime completedAt,
+            String description,
+            LocalDateTime publishedAt,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
-            ArticleStatus status
+            ArticleStatus status,
+            UUID authorId,
+            String penName
     ) {
-        return new ArticleSummary(articleId, penName, title, content, completedAt, createdAt, updatedAt, status);
+        return new ArticleSummary(
+                articleId,
+                title,
+                description,
+                publishedAt,
+                createdAt,
+                updatedAt,
+                status,
+                new AuthorInfo(
+                        authorId,
+                        penName
+                )
+        );
     }
 
-    public static ArticleSummary from(Article article, PenName penName) {
+    public static ArticleSummary from(Article article, Author author) {
         String title = Optional.ofNullable(article.getTitle())
                 .map(Title::value)
                 .orElse("");
 
-        String content = Optional.ofNullable(article.getContent())
-                .map(Content::value)
+        String description = Optional.ofNullable(article.getDescription())
+                .map(Description::value)
                 .orElse("");
 
         return new ArticleSummary(
                 article.getRawId(),
-                penName.value(),
                 title,
-                content,
-                article.getCompletedAt(),
+                description,
+                article.getPublishedAt(),
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
-                article.getStatus()
+                article.getStatus(),
+                new AuthorInfo(
+                        author.getId().id(),
+                        author.getPenName().value()
+                )
         );
     }
 }

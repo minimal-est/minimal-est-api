@@ -1,6 +1,9 @@
 package kr.minimalest.api.application.article;
 
+import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.domain.engagement.recommendation.RecommendedArticle;
+import kr.minimalest.api.domain.publishing.Author;
+import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
@@ -50,20 +53,17 @@ class FindRecommendArticlesTest {
             int page = 0;
             int limit = 3;
 
-            PenName penNameOfBlogId1 = PenName.of("blog1");
-            PenName penNameOfBlogId2 = PenName.of("blog2");
-
-            BlogId blogId1 = BlogId.generate();
-            Article article1 = Article.create(blogId1);
-
-            BlogId blogId2to3 = BlogId.generate();
-            Article article2 = Article.create(blogId2to3);
-            Article article3 = Article.create(blogId2to3);
-
-            Map<BlogId, PenName> penNameMap = Map.of(
-                    blogId1, penNameOfBlogId1,
-                    blogId2to3, penNameOfBlogId2
+            Blog blog1 = Blog.create(UserId.generate(), PenName.of("blog1"));
+            Blog blog2 = Blog.create(UserId.generate(), PenName.of("blog2"));
+            Map<BlogId, Author> mappingAuthor = Map.of(
+                    blog1.getId(), blog1.getAuthor(),
+                    blog2.getId(), blog2.getAuthor()
             );
+
+            Article article1 = Article.create(blog1.getId());
+
+            Article article2 = Article.create(blog2.getId());
+            Article article3 = Article.create(blog2.getId());
 
             List<RecommendedArticle> recommendedArticles = List.of(
                     RecommendedArticle.of(article1.getId()),
@@ -76,7 +76,7 @@ class FindRecommendArticlesTest {
             List<ArticleSummary> expectedArticleSummaries = new ArrayList<>();
 
             for (Article article : articles) {
-                expectedArticleSummaries.add(ArticleSummary.from(article, penNameMap.get(article.getBlogId())));
+                expectedArticleSummaries.add(ArticleSummary.from(article, mappingAuthor.get(article.getBlogId())));
             }
 
             given(articleRecommendationService.recommendArticles(eq(page), eq(limit))).willReturn(recommendedArticles);

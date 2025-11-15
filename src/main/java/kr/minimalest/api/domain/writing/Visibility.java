@@ -1,14 +1,13 @@
 package kr.minimalest.api.domain.writing;
 
-public enum ArticleStatus {
-    DRAFT("작성중"),
-    PUBLISHED("발행됨"),
-    ARCHIVED("보관됨"),
-    DELETED("삭제됨");
+public enum Visibility {
+    PUBLIC("공개"),
+    PRIVATE("비공개"),
+    UNLISTED("링크공유");
 
     private final String description;
 
-    ArticleStatus(String description) {
+    Visibility(String description) {
         this.description = description;
     }
 

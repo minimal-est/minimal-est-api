@@ -1,6 +1,7 @@
 package kr.minimalest.api.infrastructure.persistence.repository.adapter;
 
 import jakarta.persistence.EntityManager;
+import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
@@ -75,5 +76,21 @@ public class BlogRepositoryAdapter implements BlogRepository {
                 "SELECT exists(SELECT 1 FROM Author a WHERE a.penName = :penName)", Boolean.class)
                 .setParameter("penName", penName)
                 .getSingleResult();
+    }
+
+    @Override
+    public Optional<Author> findAuthorById(BlogId blogId) {
+        return em.createQuery("SELECT b.author FROM Blog b WHERE b.id = :blogId", Author.class)
+                .setParameter("blogId", blogId)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Author> findAuthorByPenName(PenName penName) {
+        return em.createQuery("SELECT b.author FROM Blog b WHERE b.author.penName = :penName", Author.class)
+                .setParameter("penName", penName)
+                .getResultStream()
+                .findFirst();
     }
 }

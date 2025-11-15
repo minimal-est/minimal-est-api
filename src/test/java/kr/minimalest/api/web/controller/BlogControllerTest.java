@@ -56,7 +56,7 @@ class BlogControllerTest {
     UpdateArticle updateArticle;
 
     @MockitoBean
-    CompleteArticle completeArticle;
+    PublishArticle completeArticle;
 
     @MockitoBean
     FindDraftArticles findDraftArticles;
@@ -198,7 +198,8 @@ class BlogControllerTest {
             UpdateArticleArgument argument = UpdateArticleArgument.of(
                     articleId,
                     "제목입니다.",
-                    "본문입니다. 테스트입니다."
+                    "본문입니다. 테스트입니다.",
+                    "설명입니다."
             );
 
             // when
@@ -216,14 +217,14 @@ class BlogControllerTest {
 
     @Nested
     @DisplayName("글 완료 API")
-    class CompleteArticleAPI {
+    class PublishArticleAPI {
 
         private final String COMPLETE_ARTICLE_API_PATH = "/api/v1/blogs/{blogId}/articles/{articleId}/complete";
 
         @Test
         @DisplayName("정상적인 요청 시 글 ID를 반환한다")
         @WithMockJwtUser
-        void shouldCompleteArticleWhenValidRequest() throws Exception {
+        void shouldPublishArticleWhenValidRequest() throws Exception {
             // given
             BlogId blogId = BlogId.generate();
             ArticleId articleId = ArticleId.generate();
@@ -247,7 +248,7 @@ class BlogControllerTest {
             BlogId blogId = BlogId.generate();
             ArticleId articleId = ArticleId.generate();
             willThrow(new ArticleCompleteFailException())
-                    .given(completeArticle).exec(any(CompleteArticleArgument.class));
+                    .given(completeArticle).exec(any(PublishArticleArgument.class));
 
             // when
             ResultActions perform = mockMvc

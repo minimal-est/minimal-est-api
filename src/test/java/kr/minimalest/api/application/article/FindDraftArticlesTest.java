@@ -1,5 +1,7 @@
 package kr.minimalest.api.application.article;
 
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.writing.Article;
@@ -42,6 +44,7 @@ class FindDraftArticlesTest {
         int pageNumber = 1;
         int pageSize = 3;
         BlogId blogId = BlogId.generate();
+        Blog blog = Blog.create(UserId.generate(), new PenName("test-pen-name"));
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         FindDraftArticlesArgument argument = new FindDraftArticlesArgument(blogId, pageable);
 
@@ -56,7 +59,7 @@ class FindDraftArticlesTest {
         Page<Article> articlesPage = new PageImpl<>(pagedArticles, pageable, articles.size());
 
         List<ArticleSummary> expectedSummaries = pagedArticles.stream()
-                .map(a -> ArticleSummary.from(a, PenName.of("test")))
+                .map(a -> ArticleSummary.from(a, blog.getAuthor()))
                 .toList();
 
         Page<ArticleSummary> summariesPage = new PageImpl<>(expectedSummaries, pageable, articles.size());

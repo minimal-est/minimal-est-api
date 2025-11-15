@@ -1,5 +1,6 @@
 package kr.minimalest.api.domain.publishing.repository;
 
+import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
@@ -23,4 +24,8 @@ public interface BlogRepository {
     boolean hasBlogByUserId(UserId userId);
 
     boolean existsByPenName(PenName penName);
+
+    Optional<Author> findAuthorById(BlogId blogId);
+
+    Optional<Author> findAuthorByPenName(PenName penName);
 }

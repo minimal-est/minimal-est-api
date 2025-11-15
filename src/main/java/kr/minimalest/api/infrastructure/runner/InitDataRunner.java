@@ -34,7 +34,7 @@ public class InitDataRunner implements CommandLineRunner {
     public void run(String... args) {
         User user = runInitUser();
         Blog blog = runInitBlog(user);
-        runInitArticle(blog, 1000);
+//        runInitArticle(blog, 1000);
     }
 
     public User runInitUser() {
@@ -68,31 +68,31 @@ public class InitDataRunner implements CommandLineRunner {
         return blog;
     }
 
-    public void runInitArticle(Blog blog, int size) {
-        List<Article> articles = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            Article article = Article.create(blog.getId());
-            articles.add(article);
-        }
+//    public void runInitArticle(Blog blog, int size) {
+//        List<Article> articles = new ArrayList<>();
+//        for (int i = 0; i < size; i++) {
+//            Article article = Article.create(blog.getId());
+//            articles.add(article);
+//        }
+//
+//        int i = 0;
+//        for (Article article : articles) {
+//            article.update(Title.of("title" + i), Content.of("content content" + i));
+//            article.complete();
+//            em.persist(article);
+//            i++;
+//        }
 
-        int i = 0;
-        for (Article article : articles) {
-            article.update(Title.of("title" + i), Content.of("content content" + i));
-            article.complete();
-            em.persist(article);
-            i++;
-        }
-
-        Article article = Article.create(blog.getId());
-        article.update(
-                Title.of("첫 번째 글 - 미니멀리즘이란?"),
-                Content.of("불필요한 것을 줄이고 본질에 집중하는 미니멀리즘. 일상과 개발 모두에 적용할 수 있는 방법을 간단히 정리해봤습니다.")
-        );
-
-        article.complete();
-
-        em.persist(article);
-
-        log.info("글 저장 완료: {}개", size + 1);
-    }
+//        Article article = Article.create(blog.getId());
+//        article.update(
+//                Title.of("첫 번째 글 - 미니멀리즘이란?"),
+//                Content.of("불필요한 것을 줄이고 본질에 집중하는 미니멀리즘. 일상과 개발 모두에 적용할 수 있는 방법을 간단히 정리해봤습니다.")
+//        );
+//
+//        article.complete();
+//
+//        em.persist(article);
+//
+//        log.info("글 저장 완료: {}개", size + 1);
+//    }
 }

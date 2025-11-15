@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Business
 @RequiredArgsConstructor
-public class CompleteArticle {
+public class PublishArticle {
 
     private final ArticleRepository articleRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void exec(CompleteArticleArgument arg) {
+    public void exec(PublishArticleArgument arg) {
         Article article = findArticle(arg.articleId());
-        completeArticleAndPublishEvent(article);
+        publishArticleAndPublishEvent(article);
     }
 
     private Article findArticle(ArticleId articleId) {
@@ -30,9 +30,9 @@ public class CompleteArticle {
                 .orElseThrow(() -> new ArticleNotFoundException("해당 ID의 Article을 찾을 수 없습니다."));
     }
 
-    private void completeArticleAndPublishEvent(Article article) {
+    private void publishArticleAndPublishEvent(Article article) {
         try {
-            article.complete();
+            article.publish();
             publishEvent(article);
         } catch (IllegalArgumentException e) {
             log.error("글ID: {}", article.getId(), e);

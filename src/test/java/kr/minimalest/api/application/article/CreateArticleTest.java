@@ -63,7 +63,7 @@ class CreateArticleTest {
             // then
             assertThat(result.articleId()).isEqualTo(fixture.article.getId());
             assertThat(fixture.article.getStatus()).isEqualTo(ArticleStatus.DRAFT);
-            assertThat(fixture.article.getCompletedAt()).isNull();
+            assertThat(fixture.article.getPublishedAt()).isNull();
             verify(eventPublisher, times(1)).publishEvent(any(ArticleCreatedEvent.class));
         }
     }

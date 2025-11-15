@@ -1,9 +1,14 @@
 package kr.minimalest.api.web.controller;
 
 import kr.minimalest.api.application.article.*;
-import kr.minimalest.api.domain.writing.*;
-import kr.minimalest.api.domain.publishing.BlogId;
-import kr.minimalest.api.domain.publishing.PenName;
+import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.*;
+import kr.minimalest.api.domain.writing.Article;
+import kr.minimalest.api.domain.writing.ArticleId;
+import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.Content;
+import kr.minimalest.api.domain.writing.Description;
+import kr.minimalest.api.domain.writing.Title;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,13 +48,19 @@ class ArticleControllerTest {
         void shouldReturnSingleArticle() throws Exception {
             // given
             ArticleId articleId = ArticleId.generate();
-            FindSingleArticleResult result = FindSingleArticleResult.of(
+            Blog blog = Blog.create(UserId.generate(), PenName.of("test-pen-name"));
+            ArticleDetail articleDetail = new ArticleDetail(
                     articleId.id(),
                     "제목입니다.",
                     "내용입니다.",
-                    ArticleStatus.COMPLETED,
-                    LocalDateTime.now()
+                    "설명입니다.",
+                    ArticleStatus.PUBLISHED,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    new AuthorInfo(blog.getAuthor().getId().id(), blog.getAuthor().getPenName().value())
             );
+            FindSingleArticleResult result = new FindSingleArticleResult(articleDetail);
 
             given(findSingleArticle.exec(any(FindSingleArticleArgument.class))).willReturn(result);
 
@@ -66,6 +77,7 @@ class ArticleControllerTest {
         void shouldReturnRecommendArticles() throws Exception {
             // given
             int size = 5;
+            Blog blog = Blog.create(UserId.generate(), PenName.of("test-pen-name"));
             List<Article> articles = new ArrayList<>();
             for (int i = 0; i < size * 2; i++) {
                 Article article = Article.create(BlogId.generate());
@@ -74,7 +86,7 @@ class ArticleControllerTest {
 
             List<ArticleSummary> articleSummaries = new ArrayList<>();
             for (Article article : articles) {
-                articleSummaries.add(ArticleSummary.from(article, PenName.of("test-pen-name")));
+                articleSummaries.add(ArticleSummary.from(article, blog.getAuthor()));
             }
 
             FindRecommendArticlesResult result = FindRecommendArticlesResult.of(articleSummaries);

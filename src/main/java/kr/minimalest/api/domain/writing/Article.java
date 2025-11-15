@@ -45,15 +45,39 @@ public class Article extends AggregateRoot {
     )
     private Content content;
 
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "description", columnDefinition = "TEXT", nullable = true)
+    )
+    private Description description;
+
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "content_text", columnDefinition = "TEXT", nullable = true)
+    )
+    private Content contentText;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArticleStatus status = ArticleStatus.DRAFT;
 
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Visibility visibility = Visibility.PRIVATE;
 
-    private LocalDateTime updatedAt;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; // 생성일
 
-    private LocalDateTime completedAt;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt; // 마지막 수정 시간
+
+    @Column(nullable = true)
+    private LocalDateTime publishedAt; // 발행 시간
+
+    @Column(nullable = true)
+    private LocalDateTime deletedAt; // 삭제 시간
 
     public UUID getRawId() {
         return id.id();
@@ -70,37 +94,61 @@ public class Article extends AggregateRoot {
                 blogId,
                 Title.empty(),
                 Content.empty(),
+                Description.empty(),
+                Content.empty(),
                 ArticleStatus.DRAFT,
+                Visibility.PRIVATE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 null
         );
         article.registerEvent(ArticleCreatedEvent.of(article.id, blogId));
         return article;
     }
 
-    public void update(Title title, Content content) {
-        if (status != ArticleStatus.DRAFT) {
-            throw new IllegalStateException("작성 중인 상태일때만 수정 가능합니다.");
+    // 저장 (상태 유지)
+    public void update(Title title, Content content, Description description) {
+        if (status == ArticleStatus.DELETED) {
+            throw new IllegalStateException("삭제된 글을 수정할 수 없습니다.");
+        }
+        // 발행된 상태에서 수정 시, 유효성 검증
+        if (status == ArticleStatus.PUBLISHED) {
+            validateForPublish();
         }
         this.title = title;
         this.content = content;
+        this.description = description;
         this.updatedAt = LocalDateTime.now();
         this.registerEvent(ArticleUpdatedEvent.of(id));
     }
 
-    public void complete() {
+    // 발행 (DRAFTED -> PUBLISHED)
+    public void publish() {
         if (status != ArticleStatus.DRAFT) {
-            throw new IllegalStateException("완료할 수 없는 상태입니다.");
+            throw new IllegalStateException("발행할 수 없는 상태입니다.");
         }
-        this.title = validateTitle(title);
-        this.content = validateContent(content);
-        this.status = ArticleStatus.COMPLETED;
-        this.completedAt = LocalDateTime.now();
+        validateForPublish();
+        this.status = ArticleStatus.PUBLISHED;
+        this.publishedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.registerEvent(ArticleCompletedEvent.of(id));
     }
 
-    private static Title validateTitle(Title title) {
+    public void delete() {
+        if (status == ArticleStatus.DELETED) {
+            throw new IllegalStateException("이미 삭제된 글입니다.");
+        }
+        this.status = ArticleStatus.DELETED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    private void validateForPublish() {
+        validateContent();
+        validateTitle();
+    }
+
+    private Title validateTitle() {
         Title trimmedTitle = title.trim();
         int trimmedLength = trimmedTitle.length();
         if (trimmedLength > 100) {
@@ -112,7 +160,7 @@ public class Article extends AggregateRoot {
         return trimmedTitle;
     }
 
-    private static Content validateContent(Content content) {
+    private Content validateContent() {
         int length = content.length();
         if (length > 30_000) {
             throw new IllegalArgumentException("본문은 3만자를 초과할 수 없습니다.");
@@ -122,4 +170,5 @@ public class Article extends AggregateRoot {
         }
         return content;
     }
+
 }

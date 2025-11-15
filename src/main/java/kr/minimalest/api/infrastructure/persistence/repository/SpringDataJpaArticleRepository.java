@@ -18,8 +18,13 @@ public interface SpringDataJpaArticleRepository extends JpaRepository<Article, A
     @Query("SELECT a FROM Article a")
     List<Article> findTopN(Pageable pageable);
 
-    @Query("SELECT a.id FROM  Article a")
-    List<ArticleId> findTopNIds(Pageable pageable);
+    @Query("SELECT a.id FROM Article a WHERE a.status = 'PUBLISHED'")
+    List<ArticleId> findPublishedTopNIds(Pageable pageable);
 
     Page<Article> findAllByStatusAndBlogId(ArticleStatus status, BlogId blogId, Pageable pageable);
+
+    Page<Article> findAllByBlogIdAndStatusNotOrderByUpdatedAtDesc(BlogId blogId, ArticleStatus status, Pageable pageable);
+
+    @Query("SELECT a FROM Article a WHERE a.blogId = :blogId AND a.status != :status AND LOWER(a.title.value) LIKE LOWER(CONCAT('%', :titleKeyword, '%'))")
+    Page<Article> findAllByBlogIdAndStatusNotAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(BlogId blogId, ArticleStatus status, String titleKeyword, Pageable pageable);
 }
