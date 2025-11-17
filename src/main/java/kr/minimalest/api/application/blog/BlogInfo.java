@@ -4,7 +4,10 @@ import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
 
-public record FindBlogSelfResult(
-        BlogInfo blogInfo
+public record BlogInfo(
+        BlogId blogId,
+        UserId userId,
+        PenName penName
 ) {
+
 }

@@ -20,7 +20,11 @@ public class FindMyArticles {
     @Transactional
     public FindMyArticlesResult exec(FindMyArticlesArgument argument) {
         BlogId blogId = BlogId.of(argument.blogId());
-        ArticleStatus status = argument.status();
+
+        ArticleStatus status = argument.status() != null && !argument.status().isEmpty()
+                ? ArticleStatus.valueOf(argument.status().toUpperCase())
+                : null;
+
         String searchKeyword = argument.searchKeyword() != null ? argument.searchKeyword() : "";
         Pageable pageable = argument.pageable();
 

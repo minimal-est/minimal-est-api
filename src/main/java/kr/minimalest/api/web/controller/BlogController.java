@@ -1,15 +1,16 @@
 package kr.minimalest.api.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.minimalest.api.application.article.*;
 import kr.minimalest.api.application.blog.*;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.ArticleId;
-import kr.minimalest.api.domain.writing.ArticleStatus;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import kr.minimalest.api.web.controller.dto.request.CreateBlogRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateArticleRequest;
-import kr.minimalest.api.web.controller.dto.response.ArticleDetailResponse;
+import kr.minimalest.api.web.controller.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/blogs")
+@Tag(name = "Blog", description = "블로그 및 아티클 관련 API")
 public class BlogController {
 
     private final FindBlog findBlog;
@@ -39,43 +41,46 @@ public class BlogController {
     private final DeleteArticle deleteArticle;
 
     private final FindSingleArticle findSingleArticle;
-    private final FindDraftArticles findDraftArticles;
-    private final FindCompletedArticles findCompletedArticles;
     private final FindMyArticles findMyArticles;
 
     /**
      * 현재 로그인한 사용자의 블로그 정보를 조회합니다.
+     * 로그인하지 않으면, 스프링 시큐리티가 401로 응답
+     * 로그인 상태지만 블로그가 없으면, 404로 응답
      */
     @GetMapping("self")
-    public ResponseEntity<?> findBlogSelf(
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "내 블로그 조회", description = "현재 로그인한 사용자의 블로그 정보를 조회합니다. (인증 필수)")
+    public ResponseEntity<BlogInfoResponse> findBlogSelf(
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
+        if (jwtUserDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        log.info(jwtUserDetails.toString());
+
         FindBlogSelfArgument argument = new FindBlogSelfArgument(jwtUserDetails.getUserId());
         FindBlogSelfResult result = findBlogSelf.exec(argument);
-        return ResponseEntity.ok(Map.of(
-                "blogId", result.blogId().id(),
-                "userId", result.userId().id(),
-                "penName", result.penName().value()
-        ));
+        return ResponseEntity.ok(BlogInfoResponse.of(result.blogInfo()));
     }
 
     /**
      * 펜네임을 사용해서 블로그 정보를 조회합니다.
      */
     @GetMapping("{penName}")
-    public ResponseEntity<?> findBlog(
+    @Operation(summary = "펜네임으로 블로그 조회", description = "펜네임을 사용해 특정 블로그 정보를 조회합니다.")
+    public ResponseEntity<BlogInfoResponse> findBlog(
             @PathVariable String penName
     ) {
         FindBlogArgument argument = new FindBlogArgument(penName);
         FindBlogResult result = findBlog.exec(argument);
-        return ResponseEntity.ok(Map.of(
-                "blogId", result.blogId().id(),
-                "penName", result.penName().value()
-        ));
+        return ResponseEntity.ok(BlogInfoResponse.of(result.blogInfo()));
     }
 
     @GetMapping("{penName}/articles/{articleId}/details")
-    public ResponseEntity<?> findArticleDetails(
+    @Operation(summary = "아티클 상세 조회", description = "펜네임과 아티클 ID를 사용해 아티클 상세 정보를 조회합니다.")
+    public ResponseEntity<ArticleDetailResponse> findArticleDetails(
         @PathVariable("penName") String penNameStr,
         @PathVariable("articleId") UUID articleId
     ) {
@@ -86,13 +91,14 @@ public class BlogController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createBlog(
+    @Operation(summary = "블로그 생성", description = "새로운 블로그를 생성합니다. (인증 필수, 사용자당 1개 블로그만 가능)")
+    public ResponseEntity<BlogIdResponse> createBlog(
             @RequestBody @Valid CreateBlogRequest createBlogRequest,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
         CreateBlogArgument argument = CreateBlogArgument.of(jwtUserDetails.getUserId(), createBlogRequest.penName());
         CreateBlogResult result = createBlog.exec(argument);
-        return ResponseEntity.ok(Map.of("blogId", result.blogId().id()));
+        return ResponseEntity.ok(BlogIdResponse.of(result.blogId().id()));
     }
 
     /**
@@ -100,13 +106,14 @@ public class BlogController {
      */
     @PostMapping("{blogId}/articles")
     @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
-    public ResponseEntity<?> createArticle(
+    @Operation(summary = "아티클 생성 (초안)", description = "새로운 아티클을 초안 상태로 생성합니다. (인증 필수, 본인의 블로그만 가능)")
+    public ResponseEntity<ArticleIdResponse> createArticle(
             @PathVariable UUID blogId,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
         CreateArticleArgument argument = CreateArticleArgument.of(BlogId.of(blogId));
         CreateArticleResult result = createArticle.exec(argument);
-        return ResponseEntity.ok(Map.of("articleId", result.articleId().id()));
+        return ResponseEntity.ok(ArticleIdResponse.of(result.articleId().id()));
     }
 
     /**
@@ -119,7 +126,8 @@ public class BlogController {
             @authorizationService.blogOwnsArticle(#blogId, #articleId)
             """
     )
-    public ResponseEntity<?> updateArticle(
+    @Operation(summary = "아티클 수정", description = "아티클의 제목, 본문, 설명을 수정합니다. (인증 필수, 본인의 아티클만 수정 가능)")
+    public ResponseEntity<ArticleIdResponse> updateArticle(
             @PathVariable UUID blogId,
             @PathVariable UUID articleId,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
@@ -129,11 +137,7 @@ public class BlogController {
                 ArticleId.of(articleId), request.title(), request.content(), request.description()
         );
         updateArticle.exec(argument);
-        return ResponseEntity.ok(
-                Map.of(
-                        "articleId", articleId,
-                        "title", request.title()
-                ));
+        return ResponseEntity.ok(ArticleIdResponse.of(articleId));
     }
 
     /**
@@ -146,16 +150,15 @@ public class BlogController {
             @authorizationService.blogOwnsArticle(#blogId, #articleId)
             """
     )
-    public ResponseEntity<?> completeArticle(
+    @Operation(summary = "아티클 발행", description = "초안 아티클을 발행 상태로 전환합니다. 유효성 검사(글자 수 등)가 실행됩니다. (인증 필수, 본인의 아티클만 발행 가능)")
+    public ResponseEntity<ArticleIdResponse> publishArticle(
             @PathVariable UUID blogId,
             @PathVariable UUID articleId,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
         PublishArticleArgument argument = PublishArticleArgument.of(ArticleId.of(articleId));
         publishArticle.exec(argument);
-        return ResponseEntity.ok(
-                Map.of("articleId", articleId)
-        );
+        return ResponseEntity.ok(ArticleIdResponse.of(articleId));
     }
 
     /**
@@ -165,21 +168,18 @@ public class BlogController {
      */
     @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @GetMapping("/{blogId}/articles/my")
-    public ResponseEntity<?> findMyArticles(
+    @Operation(summary = "내 아티클 목록 조회", description = "내 블로그의 아티클 목록을 조회합니다. 상태(DRAFT/COMPLETED/ALL)와 제목 검색으로 필터링 가능합니다. (인증 필수, 본인의 블로그만 조회 가능)")
+    public ResponseEntity<ArticleSummaryPageResponse> findMyArticles(
             @PathVariable UUID blogId,
             @RequestParam(value = "status", required = false) String statusParam,
             @RequestParam(value = "search", defaultValue = "") String searchKeyword,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
-        ArticleStatus status = statusParam != null && !statusParam.isEmpty()
-                ? ArticleStatus.valueOf(statusParam.toUpperCase())
-                : null;
-
-        FindMyArticlesArgument argument = new FindMyArticlesArgument(blogId, status, searchKeyword, pageable);
+        FindMyArticlesArgument argument = new FindMyArticlesArgument(blogId, statusParam, searchKeyword, pageable);
         FindMyArticlesResult result = findMyArticles.exec(argument);
-
-        return ResponseEntity.ok(result);
+        ArticleSummaryPageResponse response = ArticleSummaryPageResponse.of(result.articles());
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -192,6 +192,7 @@ public class BlogController {
             """
     )
     @DeleteMapping("/{blogId}/articles/{articleId}")
+    @Operation(summary = "아티클 삭제", description = "아티클을 삭제합니다. (소프트 삭제, 인증 필수, 본인의 아티클만 삭제 가능)")
     public ResponseEntity<?> deleteArticle(
             @PathVariable UUID blogId,
             @PathVariable UUID articleId,

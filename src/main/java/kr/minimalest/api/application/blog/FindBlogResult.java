@@ -1,10 +1,6 @@
 package kr.minimalest.api.application.blog;
 
-import kr.minimalest.api.domain.publishing.BlogId;
-import kr.minimalest.api.domain.publishing.PenName;
-
 public record FindBlogResult(
-        BlogId blogId,
-        PenName penName
+        BlogInfo blogInfo
 ) {
 }

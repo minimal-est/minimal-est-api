@@ -1,5 +1,7 @@
 package kr.minimalest.api.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.minimalest.api.application.user.*;
 import kr.minimalest.api.web.controller.dto.response.AccessTokenResponse;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication", description = "사용자 인증 관련 API")
 public class AuthController {
 
     private final AuthenticateAndIssueToken authenticateAndIssueToken;
@@ -26,7 +29,8 @@ public class AuthController {
     private final String REFRESH_TOKEN = "refreshToken";
 
     @PostMapping("/token")
-    public ResponseEntity<?> issueToken(
+    @Operation(summary = "로그인 및 토큰 발급", description = "이메일과 패스워드를 사용해 로그인하고 액세스 토큰과 리프레시 토큰을 발급합니다.")
+    public ResponseEntity<AccessTokenResponse> issueToken(
             @RequestBody @Valid IssueTokenRequest issueTokenRequest
     ) {
         AuthenticateAndIssueTokenResult authenticateAndIssueTokenResult = authenticateAndIssueToken.exec(
@@ -52,7 +56,8 @@ public class AuthController {
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<?> refreshToken(
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 사용해 새로운 액세스 토큰을 발급합니다.")
+    public ResponseEntity<AccessTokenResponse> refreshToken(
         @CookieValue(name = "refreshToken", required = false) String refreshToken
     ) {
         if (!StringUtils.hasText(refreshToken)) {

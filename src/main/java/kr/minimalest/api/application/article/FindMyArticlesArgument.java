@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record FindMyArticlesArgument(
         UUID blogId,
-        ArticleStatus status,
+        String status,
         String searchKeyword,
         Pageable pageable
 ) {

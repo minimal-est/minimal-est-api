@@ -3,6 +3,7 @@ package kr.minimalest.api.web.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.file.FileServiceException;
 import kr.minimalest.api.domain.publishing.exception.AuthorNotFoundException;
+import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
 import kr.minimalest.api.domain.writing.exception.ArticleAccessDeniedException;
 import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
 import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
@@ -104,6 +105,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyHasBlogException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyHasBlog(UserAlreadyHasBlogException e) {
         return createErrorResponse(400, "블로그 생성 실패", e.getMessage());
+    }
+
+    @ExceptionHandler(BlogNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBlogNotFound(BlogNotFoundException e) {
+        return createErrorResponse(404, "블로그를 찾을 수 없음", e.getMessage());
     }
 
     @ExceptionHandler(PenNameAlreadyExists.class)

@@ -31,6 +31,10 @@ public class Blog extends AggregateRoot {
         return author.getPenName();
     }
 
+    public UserId getOwnerUserId() {
+        return author.getUserId();
+    }
+
     public static Blog create(UserId ownerId, PenName authorPenName) {
         Blog blog = new Blog();
         blog.id = BlogId.generate();
