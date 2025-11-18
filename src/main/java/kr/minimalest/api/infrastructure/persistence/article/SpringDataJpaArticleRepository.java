@@ -1,4 +1,4 @@
-package kr.minimalest.api.infrastructure.persistence.repository;
+package kr.minimalest.api.infrastructure.persistence.article;
 
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.Article;

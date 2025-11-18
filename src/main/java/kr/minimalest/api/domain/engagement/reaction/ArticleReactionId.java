@@ -1,4 +1,4 @@
-package kr.minimalest.api.domain.engagement.feedback;
+package kr.minimalest.api.domain.engagement.reaction;
 
 import org.springframework.util.Assert;
 

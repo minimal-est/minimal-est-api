@@ -1,4 +1,4 @@
-package kr.minimalest.api.domain.engagement.feedback;
+package kr.minimalest.api.domain.engagement.reaction;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.domain.writing.ArticleId;
@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+
 
 @Entity
 @Table(
@@ -59,13 +61,26 @@ public class ArticleReaction {
                 articleId,
                 userId,
                 reactionType,
-                ReactionState.NONE,
-                null
+                ReactionState.REACTED,
+                LocalDateTime.now()
         );
     }
 
-    public ArticleReaction changeType(ReactionType reactionType) {
-        this.reactionType = reactionType;
-        return this;
+    public void toggle() {
+        if (this.reactionState == ReactionState.REACTED) {
+            this.reactionState = ReactionState.CANCELED;
+        } else {
+            this.reactionState = ReactionState.REACTED;
+            this.reactedAt = LocalDateTime.now();
+        }
+    }
+
+    /**
+     * 해당 반응의 활성화 여부를 확인합니다.
+     * Option B 설계: 각 반응 타입은 독립적으로 토글 가능
+     * @return 반응이 활성화(REACTED) 상태이면 true
+     */
+    public boolean isActive() {
+        return this.reactionState == ReactionState.REACTED;
     }
 }

@@ -1,4 +1,4 @@
-package kr.minimalest.api.infrastructure.persistence.repository;
+package kr.minimalest.api.infrastructure.persistence.user;
 
 import jakarta.persistence.EntityManager;
 import kr.minimalest.api.domain.access.Email;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JpaUserRepository implements UserRepository {
+public class UserRepositoryImpl implements UserRepository {
 
     private final EntityManager em;
 

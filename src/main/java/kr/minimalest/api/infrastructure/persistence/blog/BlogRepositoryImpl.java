@@ -1,4 +1,4 @@
-package kr.minimalest.api.infrastructure.persistence.repository.adapter;
+package kr.minimalest.api.infrastructure.persistence.blog;
 
 import jakarta.persistence.EntityManager;
 import kr.minimalest.api.domain.publishing.Author;
@@ -7,7 +7,6 @@ import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
 import kr.minimalest.api.domain.access.UserId;
-import kr.minimalest.api.infrastructure.persistence.repository.SpringDataJpaBlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class BlogRepositoryAdapter implements BlogRepository {
+public class BlogRepositoryImpl implements BlogRepository {
 
     private final EntityManager em;
     private final SpringDataJpaBlogRepository springDataJpaBlogRepository;

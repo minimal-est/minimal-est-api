@@ -1,11 +1,10 @@
-package kr.minimalest.api.infrastructure.persistence.repository.adapter;
+package kr.minimalest.api.infrastructure.persistence.article;
 
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.ArticleStatus;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
-import kr.minimalest.api.infrastructure.persistence.repository.SpringDataJpaArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +17,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class ArticleRepositoryAdapter implements ArticleRepository {
+public class ArticleRepositoryImpl implements ArticleRepository {
 
     private final SpringDataJpaArticleRepository springDataJpaArticleRepository;
 

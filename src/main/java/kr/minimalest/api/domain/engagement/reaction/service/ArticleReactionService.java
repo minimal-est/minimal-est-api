@@ -1,7 +1,7 @@
-package kr.minimalest.api.domain.engagement.feedback.service;
+package kr.minimalest.api.domain.engagement.reaction.service;
 
-import kr.minimalest.api.domain.engagement.feedback.ArticleReactionId;
-import kr.minimalest.api.domain.engagement.feedback.ReactionType;
+import kr.minimalest.api.domain.engagement.reaction.ArticleReactionId;
+import kr.minimalest.api.domain.engagement.reaction.ReactionType;
 import kr.minimalest.api.domain.writing.ArticleId;
 
 import java.util.Map;

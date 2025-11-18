@@ -1,4 +1,4 @@
-package kr.minimalest.api.domain.engagement.feedback;
+package kr.minimalest.api.domain.engagement.reaction;
 
 public enum ReactionType {
     READ("잘 읽었어요"),
