@@ -5,6 +5,7 @@ import kr.minimalest.api.domain.access.Email;
 import kr.minimalest.api.domain.access.Password;
 import kr.minimalest.api.domain.access.User;
 import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.infrastructure.persistence.user.UserRepositoryImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@Import(JpaUserRepository.class)
+@Import(UserRepositoryImpl.class)
 class JpaUserRepositoryTest {
 
     @Autowired
     EntityManager em;
 
     @Autowired
-    JpaUserRepository userRepository;
+    UserRepositoryImpl userRepository;
 
     @Test
     @Transactional

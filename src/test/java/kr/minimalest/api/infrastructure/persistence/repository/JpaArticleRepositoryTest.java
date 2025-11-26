@@ -11,7 +11,7 @@ import kr.minimalest.api.domain.access.Email;
 import kr.minimalest.api.domain.access.Password;
 import kr.minimalest.api.domain.access.User;
 import kr.minimalest.api.domain.access.UserId;
-import kr.minimalest.api.infrastructure.persistence.repository.adapter.ArticleRepositoryAdapter;
+import kr.minimalest.api.infrastructure.persistence.article.ArticleRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@Import(ArticleRepositoryAdapter.class)
+@Import(ArticleRepositoryImpl.class)
 class JpaArticleRepositoryTest {
 
     @Autowired

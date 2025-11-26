@@ -8,7 +8,7 @@ import kr.minimalest.api.domain.access.Email;
 import kr.minimalest.api.domain.access.Password;
 import kr.minimalest.api.domain.access.User;
 import kr.minimalest.api.domain.access.UserId;
-import kr.minimalest.api.infrastructure.persistence.repository.adapter.BlogRepositoryAdapter;
+import kr.minimalest.api.infrastructure.persistence.blog.BlogRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,14 +25,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@Import(BlogRepositoryAdapter.class)
+@Import(BlogRepositoryImpl.class)
 class BlogRepositoryAdapterTest {
 
     @Autowired
     EntityManager em;
 
     @Autowired
-    BlogRepositoryAdapter blogRepository;
+    BlogRepositoryImpl blogRepository;
 
     UserId savedUserId;
 
