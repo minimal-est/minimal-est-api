@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record AuthorResponse(
         UUID authorId,
-        String penName
+        String penName,
+        String profileImageUrl
 ) {
 }

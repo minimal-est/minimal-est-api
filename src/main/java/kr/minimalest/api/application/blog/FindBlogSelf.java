@@ -16,7 +16,7 @@ public class FindBlogSelf {
         Blog blog = blogRepository.findByUserId(argument.userId())
                 .orElseThrow(() -> new BlogNotFoundException("블로그가 존재하지 않습니다."));
 
-        BlogInfo blogInfo = new BlogInfo(blog.getId(), argument.userId(), blog.getPenName());
+        BlogInfo blogInfo = BlogInfo.of(blog);
 
         return new FindBlogSelfResult(blogInfo);
     }

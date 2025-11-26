@@ -5,69 +5,31 @@ import kr.minimalest.api.domain.writing.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
- * Application 계층에서 Web 계층으로
- * 범용적으로 사용하기 위해 순수 POJO로만 이루어져야 합니다.
+ * Application 계층 내부에서 사용
+ * 도메인 필드를 포함하여 비즈니스 로직에 활용
  */
 public record ArticleSummary(
-        UUID articleId,
-        String title,
-        String description,
+        ArticleId articleId,
+        Title title,
+        Description description,
         LocalDateTime publishedAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         ArticleStatus status,
-        AuthorInfo author
+        Author author
 ) {
-    public static ArticleSummary of(
-            UUID articleId,
-            String title,
-            String description,
-            LocalDateTime publishedAt,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            ArticleStatus status,
-            UUID authorId,
-            String penName
-    ) {
-        return new ArticleSummary(
-                articleId,
-                title,
-                description,
-                publishedAt,
-                createdAt,
-                updatedAt,
-                status,
-                new AuthorInfo(
-                        authorId,
-                        penName
-                )
-        );
-    }
-
     public static ArticleSummary from(Article article, Author author) {
-        String title = Optional.ofNullable(article.getTitle())
-                .map(Title::value)
-                .orElse("");
-
-        String description = Optional.ofNullable(article.getDescription())
-                .map(Description::value)
-                .orElse("");
-
         return new ArticleSummary(
-                article.getRawId(),
-                title,
-                description,
+                article.getId(),
+                article.getTitle(),
+                article.getDescription(),
                 article.getPublishedAt(),
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
                 article.getStatus(),
-                new AuthorInfo(
-                        author.getId().id(),
-                        author.getPenName().value()
-                )
+                author
         );
     }
 }

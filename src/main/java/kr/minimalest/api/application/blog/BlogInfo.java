@@ -1,13 +1,20 @@
 package kr.minimalest.api.application.blog;
 
 import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.Author;
+import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.BlogId;
-import kr.minimalest.api.domain.publishing.PenName;
 
 public record BlogInfo(
         BlogId blogId,
         UserId userId,
-        PenName penName
+        Author author
 ) {
-
+    public static BlogInfo of(Blog blog) {
+        return new BlogInfo(
+                blog.getId(),
+                blog.getOwnerUserId(),
+                blog.getAuthor()
+        );
+    }
 }

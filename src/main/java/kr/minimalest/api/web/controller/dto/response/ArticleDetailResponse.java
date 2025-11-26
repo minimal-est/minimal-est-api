@@ -19,18 +19,20 @@ public record ArticleDetailResponse(
 ) {
     public static ArticleDetailResponse of(ArticleDetail articleDetail) {
         return new ArticleDetailResponse(
-                articleDetail.articleId(),
-                articleDetail.title(),
-                articleDetail.content(),
-                articleDetail.description(),
+                articleDetail.articleId().id(),
+                articleDetail.title().value(),
+                articleDetail.content().value(),
+                articleDetail.description().value(),
                 articleDetail.status(),
                 articleDetail.createdAt(),
                 articleDetail.updatedAt(),
                 articleDetail.publishedAt(),
                 new AuthorResponse(
-                        articleDetail.author().authorId(),
-                        articleDetail.author().penName()
+                        articleDetail.author().getUserId().id(),
+                        articleDetail.author().getPenName().value(),
+                        articleDetail.author().getProfile().url()
                 )
         );
     }
+
 }

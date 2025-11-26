@@ -7,4 +7,5 @@ public record PresignedUrlResult(
         String objectKey,
         String filename,
         LocalDateTime expiresAt
-) { }
+) {
+}

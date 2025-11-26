@@ -2,15 +2,17 @@ package kr.minimalest.api.domain.publishing;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.domain.AggregateRoot;
-import kr.minimalest.api.domain.publishing.event.CreatedBlogEvent;
 import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.publishing.event.CreatedBlogEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Getter
 @Entity
 @Table(name = "blogs")
@@ -38,7 +40,10 @@ public class Blog extends AggregateRoot {
     public static Blog create(UserId ownerId, PenName authorPenName) {
         Blog blog = new Blog();
         blog.id = BlogId.generate();
+
+        // author validation도 함께 진행합니다.
         blog.author = Author.create(ownerId, authorPenName);
+
         blog.createdAt = LocalDateTime.now();
         blog.registerEvent(CreatedBlogEvent.of(blog.id, blog.author.getPenName()));
         return blog;
@@ -47,5 +52,9 @@ public class Blog extends AggregateRoot {
     public boolean isOwnedBy(UserId userId) {
         if (userId == null) return false;
         return author.getUserId().equals(userId);
+    }
+
+    public String getProfileImageUrl() {
+        return author.getProfile().url();
     }
 }

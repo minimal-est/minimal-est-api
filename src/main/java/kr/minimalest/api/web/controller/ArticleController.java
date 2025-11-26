@@ -47,7 +47,7 @@ public class ArticleController {
         if (limit == null) limit = 5;
         FindRecommendArticlesArgument argument = FindRecommendArticlesArgument.limitOf(page, limit);
         FindRecommendArticlesResult result = findRecommendArticles.exec(argument);
-        ArticleSummaryListResponse response = new ArticleSummaryListResponse(result.articleSummaries());
+        ArticleSummaryListResponse response = ArticleSummaryListResponse.of(result.articleSummaries());
         return ResponseEntity.ok(response);
     }
 

@@ -34,10 +34,13 @@ public class Article extends AggregateRoot {
     @Embedded
     @AttributeOverride(
             name = "value",
-            column = @Column(name = "title", nullable = false, length = 50)
+            column = @Column(name = "title", columnDefinition = "TEXT", nullable = false, length = 50)
     )
     private Title title;
 
+    /**
+     * JSON 형식
+     */
     @Embedded
     @AttributeOverride(
             name = "value",
@@ -51,13 +54,6 @@ public class Article extends AggregateRoot {
             column = @Column(name = "description", columnDefinition = "TEXT", nullable = true)
     )
     private Description description;
-
-    @Embedded
-    @AttributeOverride(
-            name = "value",
-            column = @Column(name = "content_text", columnDefinition = "TEXT", nullable = true)
-    )
-    private Content contentText;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -95,7 +91,6 @@ public class Article extends AggregateRoot {
                 Title.empty(),
                 Content.empty(),
                 Description.empty(),
-                Content.empty(),
                 ArticleStatus.DRAFT,
                 Visibility.PRIVATE,
                 LocalDateTime.now(),
@@ -145,22 +140,22 @@ public class Article extends AggregateRoot {
 
     private void validateForPublish() {
         validateContent();
-        validateTitle();
+        validateAndTrimTitle();
+        validateAndTrimDescription();
     }
 
-    private Title validateTitle() {
-        Title trimmedTitle = title.trim();
-        int trimmedLength = trimmedTitle.length();
+    private void validateAndTrimTitle() {
+        title = title.trim();
+        int trimmedLength = title.length();
         if (trimmedLength > 100) {
             throw new IllegalArgumentException("제목은 100자를 초과할 수 없습니다.");
         }
         if (trimmedLength == 0) {
             throw new IllegalArgumentException("제목은 필수입니다.");
         }
-        return trimmedTitle;
     }
 
-    private Content validateContent() {
+    private void validateContent() {
         int length = content.length();
         if (length > 30_000) {
             throw new IllegalArgumentException("본문은 3만자를 초과할 수 없습니다.");
@@ -168,7 +163,13 @@ public class Article extends AggregateRoot {
         if (length < 10) {
             throw new IllegalArgumentException("본문은 10자 이상이어야 합니다.");
         }
-        return content;
     }
 
+    private void validateAndTrimDescription() {
+        description = description.trim();
+        int length = description.length();
+        if (length > 200) {
+            throw new IllegalArgumentException("설명은 200자를 초과할 수 없습니다.");
+        }
+    }
 }

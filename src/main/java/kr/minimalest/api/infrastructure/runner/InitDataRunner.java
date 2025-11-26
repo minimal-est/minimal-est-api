@@ -32,6 +32,13 @@ public class InitDataRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        // 이미 데이터가 있으면 스킵
+        long userCount = em.createQuery("SELECT COUNT(u) FROM User u", Long.class).getSingleResult();
+        if (userCount > 0) {
+            log.info("초기 데이터가 이미 존재합니다");
+            return;
+        }
+
         User user = runInitUser();
         Blog blog = runInitBlog(user);
 //        runInitArticle(blog, 1000);

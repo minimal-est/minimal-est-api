@@ -17,7 +17,7 @@ public class FindBlog {
         Blog blog = blogRepository.findByPenName(PenName.of(argument.penName()))
                 .orElseThrow(() -> new BlogNotFoundException("해당 펜네임 블로그가 존재하지 않습니다: " + argument.penName()));
 
-        BlogInfo blogInfo = new BlogInfo(blog.getId(), blog.getOwnerUserId(), blog.getPenName());
+        BlogInfo blogInfo = BlogInfo.of(blog);
 
         return new FindBlogResult(blogInfo);
     }

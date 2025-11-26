@@ -92,4 +92,30 @@ public class BlogRepositoryImpl implements BlogRepository {
                 .getResultStream()
                 .findFirst();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Author> findAuthorByUserId(UserId userId) {
+        return em.createQuery("SELECT b.author FROM Blog b WHERE b.author.userId = :userId", Author.class)
+                .setParameter("userId", userId)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    @Transactional
+    public void saveAuthor(Author author) {
+        em.merge(author);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Blog> findByUserIds(List<UserId> userIds) {
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+        return em.createQuery("SELECT b FROM Blog b JOIN FETCH b.author a WHERE b.author.userId IN :userIds", Blog.class)
+                .setParameter("userIds", userIds)
+                .getResultList();
+    }
 }

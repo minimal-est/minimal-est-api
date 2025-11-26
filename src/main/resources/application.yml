@@ -11,7 +11,7 @@ spring:
     url: ${DB_URL:jdbc:mysql://localhost:3306/minimalest?serverTimezone=Asia/Seoul}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
   cloud:
     aws:

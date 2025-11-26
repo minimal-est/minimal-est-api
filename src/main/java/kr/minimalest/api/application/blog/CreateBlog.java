@@ -1,6 +1,8 @@
 package kr.minimalest.api.application.blog;
 
 import kr.minimalest.api.application.common.annotation.Business;
+import kr.minimalest.api.domain.publishing.exception.BlogCreateFailException;
+import kr.minimalest.api.domain.publishing.exception.InvalidPenNameException;
 import kr.minimalest.api.domain.publishing.exception.PenNameAlreadyExists;
 import kr.minimalest.api.domain.publishing.exception.UserAlreadyHasBlogException;
 import kr.minimalest.api.domain.publishing.Blog;
@@ -20,12 +22,15 @@ public class CreateBlog {
 
     @Transactional
     public CreateBlogResult exec(CreateBlogArgument argument) {
-        Blog blog = Blog.create(argument.userId(), PenName.of(argument.penName()));
-        validateBlog(blog);
-        BlogId blogId = blogRepository.create(blog);
-
-        publishEvent(blog);
-        return CreateBlogResult.of(blogId);
+        try {
+            Blog blog = Blog.create(argument.userId(), PenName.of(argument.penName()));
+            validateBlog(blog);
+            BlogId blogId = blogRepository.create(blog);
+            publishEvent(blog);
+            return CreateBlogResult.of(blogId);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidPenNameException(e.getMessage());
+        }
     }
 
     private void validateBlog(Blog blog) {
@@ -37,7 +42,7 @@ public class CreateBlog {
         }
 
         if (alreadyPenNameExists) {
-            throw new PenNameAlreadyExists("이미 존재하는 펜네임입니다.");
+            throw new PenNameAlreadyExists("이미 존재하는 필명입니다.");
         }
     }
 

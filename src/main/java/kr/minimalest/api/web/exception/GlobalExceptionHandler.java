@@ -2,14 +2,17 @@ package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.file.FileServiceException;
-import kr.minimalest.api.domain.publishing.exception.AuthorNotFoundException;
-import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
+import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkAlreadyExistsException;
+import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkCollectionNotFoundException;
+import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkNotFoundException;
+import kr.minimalest.api.domain.engagement.comment.exception.CannotReplyToReplyException;
+import kr.minimalest.api.domain.engagement.comment.exception.CommentNotFoundException;
+import kr.minimalest.api.domain.engagement.comment.exception.UnauthorizedException;
+import kr.minimalest.api.domain.publishing.exception.*;
 import kr.minimalest.api.domain.writing.exception.ArticleAccessDeniedException;
 import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
 import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
 import kr.minimalest.api.domain.writing.exception.ArticleStateException;
-import kr.minimalest.api.domain.publishing.exception.PenNameAlreadyExists;
-import kr.minimalest.api.domain.publishing.exception.UserAlreadyHasBlogException;
 import kr.minimalest.api.domain.access.exception.AuthenticateUserException;
 import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
 import kr.minimalest.api.domain.access.exception.InvalidRefreshToken;
@@ -117,6 +120,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(409, "펜네임 중복", e.getMessage());
     }
 
+    @ExceptionHandler(InvalidPenNameException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPenName(InvalidPenNameException e) {
+        return createErrorResponse(400, "올바르지 않은 필명", e.getMessage());
+    }
+
     @ExceptionHandler(ArticleStateException.class)
     public ResponseEntity<ErrorResponse> handleArticleState(ArticleStateException e) {
         return createErrorResponse(400, "글 상태 오류", e.getMessage());
@@ -151,6 +159,31 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleFileException(FileException e) {
         int statusCode = e.getOverridableStatusCode();
         return createErrorResponse(statusCode, "파일 관련 오류", e.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCommentNotFound(CommentNotFoundException e) {
+        return createErrorResponse(404, "댓글을 찾을 수 없음", e.getMessage());
+    }
+
+    @ExceptionHandler(CannotReplyToReplyException.class)
+    public ResponseEntity<ErrorResponse> handleCannotReplyToReply(CannotReplyToReplyException e) {
+        return createErrorResponse(400, "대댓글 작성 불가", e.getMessage());
+    }
+
+    @ExceptionHandler(BookmarkCollectionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBookmarkCollectionNotFound(BookmarkCollectionNotFoundException e) {
+        return createErrorResponse(404, "북마크 컬렉션을 찾을 수 없음", e.getMessage());
+    }
+
+    @ExceptionHandler(BookmarkNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBookmarkNotFound(BookmarkNotFoundException e) {
+        return createErrorResponse(404, "북마크를 찾을 수 없음", e.getMessage());
+    }
+
+    @ExceptionHandler(BookmarkAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleBookmarkAlreadyExists(BookmarkAlreadyExistsException e) {
+        return createErrorResponse(409, "북마크 중복", e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponse(int status, String title, String detail) {

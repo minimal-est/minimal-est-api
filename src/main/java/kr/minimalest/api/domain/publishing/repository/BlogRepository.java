@@ -28,4 +28,10 @@ public interface BlogRepository {
     Optional<Author> findAuthorById(BlogId blogId);
 
     Optional<Author> findAuthorByPenName(PenName penName);
+
+    Optional<Author> findAuthorByUserId(UserId userId);
+
+    void saveAuthor(Author author);
+
+    List<Blog> findByUserIds(List<UserId> userIds);
 }

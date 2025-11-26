@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record AuthorInfo(
         UUID authorId,
-        String penName
+        String penName,
+        String profileImageUrl
 ) {
 }

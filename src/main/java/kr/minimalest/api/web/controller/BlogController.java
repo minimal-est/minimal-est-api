@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.minimalest.api.application.article.*;
+import kr.minimalest.api.application.author.UpdateAuthorProfile;
+import kr.minimalest.api.application.author.UpdateAuthorProfileArgument;
 import kr.minimalest.api.application.blog.*;
 import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import kr.minimalest.api.web.controller.dto.request.CreateBlogRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateArticleRequest;
+import kr.minimalest.api.web.controller.dto.request.UpdateProfileRequest;
 import kr.minimalest.api.web.controller.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +36,8 @@ public class BlogController {
     private final FindBlog findBlog;
     private final FindBlogSelf findBlogSelf;
     private final CreateBlog createBlog;
+    private final UpdateAuthorProfile updateAuthorProfile;
+    private final FindProfileImageUrl findProfileImageUrl;
 
     private final CreateArticle createArticle;
     private final UpdateArticle updateArticle;
@@ -56,8 +61,6 @@ public class BlogController {
         if (jwtUserDetails == null) {
             return ResponseEntity.status(401).build();
         }
-
-        log.info(jwtUserDetails.toString());
 
         FindBlogSelfArgument argument = new FindBlogSelfArgument(jwtUserDetails.getUserId());
         FindBlogSelfResult result = findBlogSelf.exec(argument);
@@ -90,6 +93,7 @@ public class BlogController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "블로그 생성", description = "새로운 블로그를 생성합니다. (인증 필수, 사용자당 1개 블로그만 가능)")
     public ResponseEntity<BlogIdResponse> createBlog(
             @RequestBody @Valid CreateBlogRequest createBlogRequest,
@@ -104,7 +108,7 @@ public class BlogController {
      * 기본 글을 생성합니다.
      */
     @PostMapping("{blogId}/articles")
-    @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
+    @PreAuthorize("isAuthenticated() && @authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @Operation(summary = "아티클 생성 (초안)", description = "새로운 아티클을 초안 상태로 생성합니다. (인증 필수, 본인의 블로그만 가능)")
     public ResponseEntity<ArticleIdResponse> createArticle(
             @PathVariable UUID blogId,
@@ -165,7 +169,7 @@ public class BlogController {
      * status 파라미터: DRAFT|COMPLETED|ALL (기본값: ALL)
      * search 파라미터: 제목으로 검색 (선택사항)
      */
-    @PreAuthorize("@authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
+    @PreAuthorize("isAuthenticated() && @authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @GetMapping("/{blogId}/articles/my")
     @Operation(summary = "내 아티클 목록 조회", description = "내 블로그의 아티클 목록을 조회합니다. 상태(DRAFT/COMPLETED/ALL)와 제목 검색으로 필터링 가능합니다. (인증 필수, 본인의 블로그만 조회 가능)")
     public ResponseEntity<ArticleSummaryPageResponse> findMyArticles(
@@ -199,5 +203,43 @@ public class BlogController {
     ) {
         deleteArticle.exec(new DeleteArticleArgument(articleId));
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 프로필 이미지 URL 조회
+     */
+    @GetMapping("{blogId}/profile")
+    @Operation(summary = "프로필 이미지 URL 조회", description = "해당 블로그의 작가 프로필 URL을 조회합니다.")
+    public ResponseEntity<FindProfileImageUrlResponse> findProfile(
+            @PathVariable UUID blogId
+    ) {
+        FindProfileImageUrlResult result = findProfileImageUrl.exec(new FindProfileImageUrlArgument(blogId));
+        return ResponseEntity.ok(new FindProfileImageUrlResponse(result.profileImageUrl()));
+    }
+
+    /**
+     * 프로필 이미지 URL 저장
+     * S3에 업로드된 후 받은 URL을 저장합니다.
+     */
+    @PutMapping("{blogId}/profile")
+    @PreAuthorize("isAuthenticated() && @authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
+    @Operation(
+            summary = "프로필 이미지 URL 저장",
+            description =
+                    """
+                    S3에 업로드된 프로필 이미지의 URL을 저장합니다. (인증 필수, 본인의 블로그만 수정 가능)
+                    """
+    )
+    public ResponseEntity<UpdateProfileResponse> updateProfile(
+            @PathVariable UUID blogId,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        UpdateAuthorProfileArgument argument = UpdateAuthorProfileArgument.of(
+                jwtUserDetails.getUserId().id(),
+                request.profileImageUrl()
+        );
+        var result = updateAuthorProfile.exec(argument);
+        return ResponseEntity.ok(UpdateProfileResponse.of(result));
     }
 }

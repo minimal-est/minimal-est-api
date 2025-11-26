@@ -17,6 +17,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
@@ -56,11 +57,15 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(POST, "/api/v1/auth/token").permitAll()
                         .requestMatchers(POST, "/api/v1/users").permitAll()
                         .requestMatchers(GET, "/api/v1/articles/**").permitAll()
+                        .requestMatchers(GET, "/api/v1/articles/*/comments/**").permitAll()
+                        .requestMatchers(POST, "/api/v1/articles/*/comments/guest").permitAll()
+                        .requestMatchers(DELETE, "/api/v1/articles/*/comments/*/guest").permitAll()
                         .requestMatchers(GET, "/api/v1/blogs/**").permitAll()
                         .requestMatchers(POST, "/api/v1/files/**").permitAll()
+                        .requestMatchers(GET, "/api/v1/bookmarks/collections/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
