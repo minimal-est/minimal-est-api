@@ -16,6 +16,10 @@ public interface ArticleRepository {
 
     Optional<Article> findById(ArticleId articleId);
 
+    Optional<Article> findNextPublishedArticle(ArticleId articleId);
+
+    Optional<Article> findPrevPublishedArticle(ArticleId articleId);
+
     List<Article> findAllByIds(List<ArticleId> articleIds);
 
     List<ArticleId> findTopNIdsByOrderByPublishedAtDesc(int page, int limit);

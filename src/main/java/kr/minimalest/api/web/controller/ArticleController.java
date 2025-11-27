@@ -3,9 +3,7 @@ package kr.minimalest.api.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.minimalest.api.application.article.FindRecommendArticles;
-import kr.minimalest.api.application.article.FindRecommendArticlesArgument;
-import kr.minimalest.api.application.article.FindRecommendArticlesResult;
+import kr.minimalest.api.application.article.*;
 import kr.minimalest.api.application.reaction.AddOrToggleReactionToArticle;
 import kr.minimalest.api.application.reaction.AddOrToggleReactionToArticleArgument;
 import kr.minimalest.api.application.reaction.GetArticleReactionStats;
@@ -32,6 +30,7 @@ import java.util.UUID;
 public class ArticleController {
 
     private final FindRecommendArticles findRecommendArticles;
+    private final FindPrevAndNextArticle findPrevAndNextArticle;
     private final AddOrToggleReactionToArticle addOrToggleReactionToArticle;
     private final GetArticleReactionStats getArticleReactionStats;
     private final GetMyReactionsFromArticle getMyReactionsFromArticle;
@@ -49,6 +48,21 @@ public class ArticleController {
         FindRecommendArticlesResult result = findRecommendArticles.exec(argument);
         ArticleSummaryListResponse response = ArticleSummaryListResponse.of(result.articleSummaries());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{articleId}/prev-and-next")
+    @Operation(summary = "해당 아티클 블로그의 이전, 다음 글 조회", description = "발행일자 기준으로 해당 아티클 블로그의 이전 글과 다음 글을 조회합니다. (없으면 " +
+            "null로 반환)")
+    public ResponseEntity<ArticleSummaryOfPrevAndNextResponse> findArticleOfPrevAndNext(
+            @PathVariable UUID articleId
+    ) {
+        FindPrevAndNextArticleArgument argument = new FindPrevAndNextArticleArgument(articleId);
+        FindPrevAndNextArticleResult result = findPrevAndNextArticle.exec(argument);
+        ArticleSummaryResponse prevResp = result.prevArticle() == null ? null :
+                ArticleSummaryResponse.of(result.prevArticle());
+        ArticleSummaryResponse nextResp = result.nextArticle() == null ? null :
+                ArticleSummaryResponse.of(result.nextArticle());
+        return ResponseEntity.ok(new ArticleSummaryOfPrevAndNextResponse(prevResp, nextResp));
     }
 
     @PostMapping("/{articleId}/reactions")

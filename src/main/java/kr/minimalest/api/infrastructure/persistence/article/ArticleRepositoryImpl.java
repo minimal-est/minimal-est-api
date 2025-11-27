@@ -27,6 +27,16 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public Optional<Article> findNextPublishedArticle(ArticleId articleId) {
+        return springDataJpaArticleRepository.findOneByIdPublishedAtAfter(articleId);
+    }
+
+    @Override
+    public Optional<Article> findPrevPublishedArticle(ArticleId articleId) {
+        return springDataJpaArticleRepository.findOneByIdPublishedAtBefore(articleId);
+    }
+
+    @Override
     public Optional<Article> findById(ArticleId articleId) {
         return springDataJpaArticleRepository.findById(articleId);
     }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SpringDataJpaArticleRepository extends JpaRepository<Article, ArticleId> {
@@ -27,4 +28,38 @@ public interface SpringDataJpaArticleRepository extends JpaRepository<Article, A
 
     @Query("SELECT a FROM Article a WHERE a.blogId = :blogId AND a.status != :status AND LOWER(a.title.value) LIKE LOWER(CONCAT('%', :titleKeyword, '%'))")
     Page<Article> findAllByBlogIdAndStatusNotAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(BlogId blogId, ArticleStatus status, String titleKeyword, Pageable pageable);
+
+    /**
+     * 해당 아티클 다음으로 발행된 아티클 반환
+     * @param articleId 기준이될 아티클
+     * @return 다음 발행된 아티클
+     */
+    @Query("""
+        SELECT a
+        FROM Article a
+        JOIN Article b ON a.blogId = b.blogId
+        WHERE b.id = :articleId
+            AND a.status = 'PUBLISHED'
+            AND a.publishedAt > b.publishedAt
+        ORDER BY a.publishedAt
+        LIMIT 1
+    """)
+    Optional<Article> findOneByIdPublishedAtAfter(ArticleId articleId);
+
+    /**
+     * 해당 아티클 이전으로 발행된 아티클 반환
+     * @param articleId 기준이될 아티클
+     * @return 이전 발행된 아티클
+     */
+    @Query("""
+        SELECT a
+        FROM Article a
+        JOIN Article b ON a.blogId = b.blogId
+        WHERE b.id = :articleId
+            AND a.status = 'PUBLISHED'
+            AND a.publishedAt < b.publishedAt
+        ORDER BY a.publishedAt DESC
+        LIMIT 1
+    """)
+    Optional<Article> findOneByIdPublishedAtBefore(ArticleId articleId);
 }
