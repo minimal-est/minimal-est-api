@@ -58,7 +58,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers(POST, "/api/v1/auth/token").permitAll()
-                        .requestMatchers(POST, "/api/v1/users").permitAll()
+                        .requestMatchers(POST, "/api/v1/auth/signup").permitAll()
+                        .requestMatchers(GET, "/api/v1/auth/verify").permitAll()
+
                         .requestMatchers(GET, "/api/v1/articles/**").permitAll()
                         .requestMatchers(GET, "/api/v1/articles/*/comments/**").permitAll()
                         .requestMatchers(POST, "/api/v1/articles/*/comments/guest").permitAll()
