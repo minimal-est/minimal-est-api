@@ -2,6 +2,7 @@ package kr.minimalest.api.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.minimalest.api.application.file.FileServiceException;
+import kr.minimalest.api.domain.access.exception.*;
 import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkAlreadyExistsException;
 import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkCollectionNotFoundException;
 import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkNotFoundException;
@@ -13,9 +14,6 @@ import kr.minimalest.api.domain.writing.exception.ArticleAccessDeniedException;
 import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
 import kr.minimalest.api.domain.writing.exception.ArticleNotFoundException;
 import kr.minimalest.api.domain.writing.exception.ArticleStateException;
-import kr.minimalest.api.domain.access.exception.AuthenticateUserException;
-import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
-import kr.minimalest.api.domain.access.exception.InvalidRefreshToken;
 import kr.minimalest.api.web.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -104,6 +102,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleEmailDuplicated(EmailDuplicatedException e) {
         return createErrorResponse(409, "이메일 중복", e.getMessage());
     }
+
+    @ExceptionHandler(EmailSendForVerificationFailedException.class)
+    public ResponseEntity<ErrorResponse> handleEmailSendForVerificationFailed(EmailSendForVerificationFailedException e) {
+        return createErrorResponse(500, "이메일 발송 실패", "이메일 발송에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    @ExceptionHandler(SignupRateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleSignupRateLimitExceeded(SignupRateLimitExceededException e) {
+        return createErrorResponse(429, "회원가입 시도 초과", e.getMessage());
+    }
+
 
     @ExceptionHandler(UserAlreadyHasBlogException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyHasBlog(UserAlreadyHasBlogException e) {

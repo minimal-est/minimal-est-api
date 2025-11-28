@@ -1,16 +1,18 @@
 package kr.minimalest.api.application.user;
 
 import kr.minimalest.api.application.common.annotation.Business;
-import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
 import kr.minimalest.api.domain.access.Email;
 import kr.minimalest.api.domain.access.Password;
-import kr.minimalest.api.domain.access.User;
-import kr.minimalest.api.domain.access.UserId;
+import kr.minimalest.api.domain.access.PendingSignup;
+import kr.minimalest.api.domain.access.exception.EmailDuplicatedException;
+import kr.minimalest.api.domain.access.exception.SignupRateLimitExceededException;
+import kr.minimalest.api.domain.access.repository.PendingSignupRepository;
 import kr.minimalest.api.domain.access.repository.UserRepository;
+import kr.minimalest.api.domain.access.service.EmailVerificationService;
 import kr.minimalest.api.domain.access.service.PasswordService;
+import kr.minimalest.api.infrastructure.mail.EmailSignupRateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -20,30 +22,39 @@ public class SignUp {
 
     private final UserRepository userRepository;
     private final PasswordService passwordService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final EmailVerificationService emailVerificationService;
+    private final PendingSignupRepository pendingSignupRepository;
+    private final EmailSignupRateLimiter emailSignupRateLimiter;
 
     @Transactional
-    public SignUpResult exec(SignUpArgument argument) {
+    public void exec(SignUpArgument argument) {
         Email email = Email.of(argument.email());
+
+        // Rate Limit 확인
+        if (!emailSignupRateLimiter.isAllowed(email)) {
+            throw new SignupRateLimitExceededException(
+                "1시간 내에 5회 이상 시도했습니다. 잠시 후 다시 시도하세요."
+            );
+        }
+
+        // 시도 기록
+        emailSignupRateLimiter.recordAttempt(email);
+
         Password encryptedPassword = passwordService.encryptPassword(argument.password());
 
         validateEmail(email);
 
-        User newUser = User.signUp(email, encryptedPassword);
-        UserId savedUserId = userRepository.save(newUser);
+        PendingSignup pendingSignup = PendingSignup.of(email, encryptedPassword);
+        pendingSignupRepository.save(pendingSignup);
 
-        publishEvents(newUser);
+        emailVerificationService.sendVerificationEmail(email);
 
-        return SignUpResult.of(savedUserId);
+        log.info("이메일 인증 회원가입 신청: {}", email.value());
     }
 
     private void validateEmail(Email email) {
         if (userRepository.existsByEmail(email)) {
             throw new EmailDuplicatedException("이미 사용 중인 이메일입니다.");
         }
-    }
-
-    private void publishEvents(User user) {
-        user.releaseEvents().forEach(eventPublisher::publishEvent);
     }
 }
