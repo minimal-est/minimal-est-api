@@ -17,7 +17,7 @@ public class FindMyArticles {
     private final ArticleRepository articleRepository;
     private final ArticleSummaryCreator articleSummaryCreator;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FindMyArticlesResult exec(FindMyArticlesArgument argument) {
         BlogId blogId = BlogId.of(argument.blogId());
 

@@ -60,13 +60,16 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/v1/auth/token").permitAll()
                         .requestMatchers(POST, "/api/v1/auth/signup").permitAll()
                         .requestMatchers(GET, "/api/v1/auth/verify").permitAll()
+                        .requestMatchers(POST, "/api/v1/auth/token/refresh").permitAll()
 
                         .requestMatchers(GET, "/api/v1/articles/**").permitAll()
-                        .requestMatchers(GET, "/api/v1/articles/*/comments/**").permitAll()
                         .requestMatchers(POST, "/api/v1/articles/*/comments/guest").permitAll()
                         .requestMatchers(DELETE, "/api/v1/articles/*/comments/*/guest").permitAll()
+
                         .requestMatchers(GET, "/api/v1/blogs/**").permitAll()
+
                         .requestMatchers(POST, "/api/v1/files/**").permitAll()
+
                         .requestMatchers(GET, "/api/v1/bookmarks/collections/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -8,7 +8,7 @@ import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkCollectionN
 import kr.minimalest.api.domain.discovery.bookmark.exception.BookmarkNotFoundException;
 import kr.minimalest.api.domain.engagement.comment.exception.CannotReplyToReplyException;
 import kr.minimalest.api.domain.engagement.comment.exception.CommentNotFoundException;
-import kr.minimalest.api.domain.engagement.comment.exception.UnauthorizedException;
+import kr.minimalest.api.domain.engagement.comment.exception.InvalidRefreshToken;
 import kr.minimalest.api.domain.publishing.exception.*;
 import kr.minimalest.api.domain.writing.exception.ArticleAccessDeniedException;
 import kr.minimalest.api.domain.writing.exception.ArticleCompleteFailException;
@@ -33,6 +33,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(WebException.class)
+    public ResponseEntity<ErrorResponse> handleWebException(WebException e) {
+        return createErrorResponse(e.getOverridableStatusCode(), "파일, 토큰 등 웹 계층 오류", e.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
@@ -83,13 +88,13 @@ public class GlobalExceptionHandler {
         return createErrorResponse(401, "사용자 인증 과정 실패", e.getMessage());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+    @ExceptionHandler(InvalidRefreshToken.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(InvalidRefreshToken e) {
         return createErrorResponse(401, "인증 실패", e.getMessage());
     }
 
-    @ExceptionHandler(InvalidRefreshToken.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRefreshToken(InvalidRefreshToken e) {
+    @ExceptionHandler(kr.minimalest.api.domain.access.exception.InvalidRefreshToken.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshToken(kr.minimalest.api.domain.access.exception.InvalidRefreshToken e) {
         return createErrorResponse(401, "토큰 재발급 실패", e.getMessage());
     }
 

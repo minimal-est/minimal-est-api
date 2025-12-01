@@ -2,23 +2,25 @@ package kr.minimalest.api.domain.writing;
 
 import jakarta.persistence.*;
 import kr.minimalest.api.domain.AggregateRoot;
-import kr.minimalest.api.domain.writing.event.ArticleCompletedEvent;
-import kr.minimalest.api.domain.writing.event.ArticleUpdatedEvent;
-import kr.minimalest.api.domain.writing.event.ArticleCreatedEvent;
 import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.writing.event.ArticleCompletedEvent;
+import kr.minimalest.api.domain.writing.event.ArticleCreatedEvent;
+import kr.minimalest.api.domain.writing.event.ArticleUpdatedEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Getter
 @Entity
-@Table(name = "articles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "articles")
 public class Article extends AggregateRoot {
 
     @EmbeddedId
@@ -47,6 +49,13 @@ public class Article extends AggregateRoot {
             column = @Column(name = "content", columnDefinition = "TEXT", nullable = true)
     )
     private Content content;
+
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "pure_content", columnDefinition = "TEXT", nullable = true)
+    )
+    private Content pureContent;
 
     @Embedded
     @AttributeOverride(
@@ -90,6 +99,7 @@ public class Article extends AggregateRoot {
                 blogId,
                 Title.empty(),
                 Content.empty(),
+                Content.empty(),
                 Description.empty(),
                 ArticleStatus.DRAFT,
                 Visibility.PRIVATE,
@@ -103,7 +113,7 @@ public class Article extends AggregateRoot {
     }
 
     // 저장 (상태 유지)
-    public void update(Title title, Content content, Description description) {
+    public void update(Title title, Content content, Content pureContent, Description description) {
         if (status == ArticleStatus.DELETED) {
             throw new IllegalStateException("삭제된 글을 수정할 수 없습니다.");
         }
@@ -113,6 +123,7 @@ public class Article extends AggregateRoot {
         }
         this.title = title;
         this.content = content;
+        this.pureContent = pureContent;
         this.description = description;
         this.updatedAt = LocalDateTime.now();
         this.registerEvent(ArticleUpdatedEvent.of(id));
@@ -156,7 +167,8 @@ public class Article extends AggregateRoot {
     }
 
     private void validateContent() {
-        int length = content.length();
+        int length = pureContent.length();
+        log.info("{}", length);
         if (length > 30_000) {
             throw new IllegalArgumentException("본문은 3만자를 초과할 수 없습니다.");
         }

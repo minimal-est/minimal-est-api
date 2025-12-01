@@ -5,6 +5,7 @@ import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Business
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ public class FindBlogSelf {
 
     private final BlogRepository blogRepository;
 
+    @Transactional(readOnly = true)
     public FindBlogSelfResult exec(FindBlogSelfArgument argument) {
         Blog blog = blogRepository.findByUserId(argument.userId())
                 .orElseThrow(() -> new BlogNotFoundException("블로그가 존재하지 않습니다."));

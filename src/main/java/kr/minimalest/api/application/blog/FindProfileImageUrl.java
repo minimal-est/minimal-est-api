@@ -14,7 +14,7 @@ public class FindProfileImageUrl {
 
     private final BlogRepository blogRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FindProfileImageUrlResult exec(FindProfileImageUrlArgument argument) {
         BlogId blogId = BlogId.of(argument.blogId());
         Author author = blogRepository.findAuthorById(blogId)

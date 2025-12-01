@@ -21,14 +21,16 @@ public class UpdateArticle {
         Article article = findArticle(arg.articleId());
         Title title = Title.of(arg.title());
         Content content = Content.of(arg.content());
+        Content pureContent = Content.of(arg.content());
         Description description = new Description(arg.description());
 
-        updateArticleAndPublishEvent(article, title, content, description);
+        updateArticleAndPublishEvent(article, title, content, pureContent, description);
     }
 
-    private void updateArticleAndPublishEvent(Article article, Title title, Content content, Description description) {
+    private void updateArticleAndPublishEvent(Article article, Title title, Content content,
+                                              Content pureContent, Description description) {
         try {
-            article.update(title, content, description);
+            article.update(title, content, pureContent, description);
             publishEvent(article);
         } catch (Exception e) {
             throw new ArticleStateException("글을 수정할 수 없는 상태입니다.", e);

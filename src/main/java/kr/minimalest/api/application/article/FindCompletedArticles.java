@@ -5,6 +5,7 @@ import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 @Business
 @RequiredArgsConstructor
@@ -13,6 +14,7 @@ public class FindCompletedArticles {
     private final ArticleRepository articleRepository;
     private final ArticleSummaryCreator articleSummaryCreator;
 
+    @Transactional(readOnly = true)
     public FindCompletedArticlesResult exec(FindCompletedArticlesArgument argument) {
         Page<Article> articles = articleRepository.findAllCompletedByBlogId(argument.blogId(), argument.pageable());
         Page<ArticleSummary> articleSummaries = articleSummaryCreator.createWithPage(articles);

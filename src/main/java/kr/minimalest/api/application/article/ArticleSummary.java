@@ -18,7 +18,7 @@ public record ArticleSummary(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         ArticleStatus status,
-        Author author
+        AuthorInfo authorInfo
 ) {
     public static ArticleSummary from(Article article, Author author) {
         return new ArticleSummary(
@@ -29,7 +29,11 @@ public record ArticleSummary(
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
                 article.getStatus(),
-                author
+                new AuthorInfo(
+                        author.getId().id(),
+                        author.getPenName().value(),
+                        author.getProfile().url()
+                )
         );
     }
 }

@@ -21,7 +21,7 @@ public class AuthenticateAndIssueToken {
      * 사용자의 이메일과 비밀번호를 검증하고, 엑세스 토큰과 리프레시 토큰을 발급합니다.
      * 발급한 리프레시 토큰을 저장합니다.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthenticateAndIssueTokenResult exec(AuthenticateAndIssueTokenArgument argument) {
         User authenticatedUser = userAuthenticator.authenticate(
                 Email.of(argument.email()),

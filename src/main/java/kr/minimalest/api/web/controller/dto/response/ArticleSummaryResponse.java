@@ -2,10 +2,13 @@ package kr.minimalest.api.web.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.minimalest.api.application.article.ArticleSummary;
+import kr.minimalest.api.application.article.AuthorInfo;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 public record ArticleSummaryResponse(
         @Schema(description = "아티클 ID")
         UUID articleId,
@@ -22,7 +25,7 @@ public record ArticleSummaryResponse(
         @Schema(description = "상태")
         String status,
         @Schema(description = "저자 정보")
-        AuthorDetailResponse author
+        AuthorInfoResponse author
 ) {
     public static ArticleSummaryResponse of(ArticleSummary articleSummary) {
         return new ArticleSummaryResponse(
@@ -33,11 +36,11 @@ public record ArticleSummaryResponse(
                 articleSummary.createdAt(),
                 articleSummary.updatedAt(),
                 articleSummary.status().name(),
-                AuthorDetailResponse.of(articleSummary.author())
+                AuthorInfoResponse.of(articleSummary.authorInfo())
         );
     }
 
-    public record AuthorDetailResponse(
+    public record AuthorInfoResponse(
             @Schema(description = "저자 ID")
             UUID authorId,
             @Schema(description = "필명")
@@ -45,11 +48,11 @@ public record ArticleSummaryResponse(
             @Schema(description = "프로필 이미지 URL")
             String profileImageUrl
     ) {
-        public static AuthorDetailResponse of(kr.minimalest.api.domain.publishing.Author author) {
-            return new AuthorDetailResponse(
-                    author.getUserId().id(),
-                    author.getPenName().value(),
-                    author.getProfile().url()
+        public static AuthorInfoResponse of(AuthorInfo authorInfo) {
+            return new AuthorInfoResponse(
+                    authorInfo.authorId(),
+                    authorInfo.penName(),
+                    authorInfo.profileImageUrl()
             );
         }
     }

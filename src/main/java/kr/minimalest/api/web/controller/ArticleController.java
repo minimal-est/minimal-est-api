@@ -34,6 +34,19 @@ public class ArticleController {
     private final AddOrToggleReactionToArticle addOrToggleReactionToArticle;
     private final GetArticleReactionStats getArticleReactionStats;
     private final GetMyReactionsFromArticle getMyReactionsFromArticle;
+    private final SearchArticles searchArticles;
+
+    @GetMapping("/search")
+    @Operation(summary = "아티클 검색", description = "제목 또는 내용으로 발행된 아티클을 검색합니다. (기본값: size=15, page=0)")
+    public ResponseEntity<ArticleSummaryPageResponse> search(
+            @RequestParam(value = "query") String query,
+            @RequestParam(value = "size", defaultValue = "15") Integer size,
+            @RequestParam(value = "page", defaultValue = "0") Integer page
+    ) {
+        SearchArticlesArgument argument = SearchArticlesArgument.of(query, page, size);
+        SearchArticlesResult result = searchArticles.exec(argument);
+        return ResponseEntity.ok(ArticleSummaryPageResponse.of(result));
+    }
 
     @GetMapping("/recommend")
     @Operation(summary = "추천 아티클 조회", description = "추천 알고리즘에 따른 아티클 목록을 조회합니다. (페이지, 제한 갯수 지정 가능)")

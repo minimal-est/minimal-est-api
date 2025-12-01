@@ -63,6 +63,16 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
+    public void decrementLikes(CommentId commentId) {
+        springDataJpaRepository.decrementLikes(commentId);
+    }
+
+    @Override
+    public void incrementLikes(CommentId commentId) {
+        springDataJpaRepository.incrementLikes(commentId);
+    }
+
+    @Override
     public boolean existsById(CommentId commentId) {
         return springDataJpaRepository.existsByIdAndStatus(commentId, CommentStatus.ACTIVE);
     }

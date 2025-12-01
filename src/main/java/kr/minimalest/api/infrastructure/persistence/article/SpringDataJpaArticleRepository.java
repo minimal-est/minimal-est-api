@@ -62,4 +62,21 @@ public interface SpringDataJpaArticleRepository extends JpaRepository<Article, A
         LIMIT 1
     """)
     Optional<Article> findOneByIdPublishedAtBefore(ArticleId articleId);
+
+    @Query(value =
+        """
+        SELECT * FROM articles a
+        WHERE a.status = 'PUBLISHED'
+        AND MATCH(a.title, a.content) AGAINST(:query IN NATURAL LANGUAGE MODE)
+        ORDER BY MATCH(a.title, a.content) AGAINST(:query IN NATURAL LANGUAGE MODE) DESC
+        """,
+        countQuery =
+        """
+        SELECT COUNT(*) FROM articles a
+        WHERE a.status = 'PUBLISHED'
+        AND MATCH(a.title, a.content) AGAINST(:query IN NATURAL LANGUAGE MODE)
+        """,
+        nativeQuery = true
+    )
+    Page<Article> searchByTitleOrContent(String query, Pageable pageable);
 }

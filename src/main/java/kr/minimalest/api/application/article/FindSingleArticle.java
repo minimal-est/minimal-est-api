@@ -20,7 +20,7 @@ public class FindSingleArticle {
     private final ArticleRepository articleRepository;
     private final BlogService blogService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FindSingleArticleResult exec(FindSingleArticleArgument argument) {
         ArticleId articleId = ArticleId.of(argument.articleId());
         PenName penName = PenName.of(argument.penName());

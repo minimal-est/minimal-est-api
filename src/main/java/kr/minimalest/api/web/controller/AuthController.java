@@ -6,11 +6,10 @@ import jakarta.validation.Valid;
 import kr.minimalest.api.application.user.*;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import kr.minimalest.api.web.controller.dto.request.SignUpRequest;
-import kr.minimalest.api.web.controller.dto.request.VerifyEmailResponse;
 import kr.minimalest.api.web.controller.dto.response.AccessTokenResponse;
 import kr.minimalest.api.web.controller.dto.response.CurrentUserResponse;
 import kr.minimalest.api.web.controller.dto.request.IssueTokenRequest;
-import kr.minimalest.api.web.exception.UnauthorizedException;
+import kr.minimalest.api.web.exception.RefreshTokenNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +35,8 @@ public class AuthController {
     private final SignUp signUp;
 
     private final VerifyEmail verifyEmail;
+
+    private final Logout logout;
 
     private final String REFRESH_TOKEN = "refreshToken";
 
@@ -80,13 +81,15 @@ public class AuthController {
                 .build();
     }
 
+    // jwt filter는 access token만 검사합니다.
+    // 그러므로 refresh token을 이용한 재발급 요청은 인증이 필요없습니다.
     @PostMapping("/token/refresh")
     @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 사용해 새로운 액세스 토큰을 발급합니다.")
     public ResponseEntity<AccessTokenResponse> refreshToken(
         @CookieValue(name = "refreshToken", required = false) String refreshToken
     ) {
         if (!StringUtils.hasText(refreshToken)) {
-            throw new UnauthorizedException("리프레시 토큰 쿠키가 존재하지 않습니다.");
+            throw new RefreshTokenNotFound("리프레시 토큰 쿠키가 존재하지 않습니다.", 401);
         }
 
         AccessTokenReissueResult accessTokenReissueResult = accessTokenReissue.exec(
@@ -95,6 +98,31 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .body(AccessTokenResponse.of(accessTokenReissueResult.accessToken().value()));
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "로그아웃",
+            description = "Redis에 저장된 Refresh Token을 삭제하여 로그아웃합니다. (인증 필수)"
+    )
+    public ResponseEntity<?> logout(
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        logout.exec(LogoutArgument.of(jwtUserDetails.getUserId()));
+
+        ResponseCookie responseCookie = ResponseCookie
+                .from(REFRESH_TOKEN, "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("lax")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .build();
     }
 
     @PostMapping("/signup")

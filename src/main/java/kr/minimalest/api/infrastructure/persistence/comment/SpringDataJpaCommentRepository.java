@@ -6,6 +6,7 @@ import kr.minimalest.api.domain.engagement.comment.CommentStatus;
 import kr.minimalest.api.domain.writing.ArticleId;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -61,4 +62,26 @@ public interface SpringDataJpaCommentRepository extends JpaRepository<Comment, C
      * 댓글 존재 여부 확인 (ACTIVE 상태만)
      */
     boolean existsByIdAndStatus(CommentId commentId, CommentStatus status);
+
+    /**
+     * 좋아요 + 1
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE Comment c
+            SET c.likeCount = c.likeCount + 1
+            WHERE c.id = :commentId
+            """)
+    void incrementLikes(CommentId commentId);
+
+    /**
+     * 좋아요 - 1
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE Comment c
+            SET c.likeCount = c.likeCount - 1
+            WHERE c.id = :commentId
+            """)
+    void decrementLikes(CommentId commentId);
 }

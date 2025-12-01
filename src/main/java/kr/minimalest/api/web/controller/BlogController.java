@@ -86,6 +86,7 @@ public class BlogController {
         @PathVariable("penName") String penNameStr,
         @PathVariable("articleId") UUID articleId
     ) {
+        log.info("{}, {} 아티클 조회", penNameStr, articleId);
         FindSingleArticleArgument argument = new FindSingleArticleArgument(penNameStr, articleId);
         FindSingleArticleResult result = findSingleArticle.exec(argument);
 
@@ -137,7 +138,11 @@ public class BlogController {
             @Valid @RequestBody UpdateArticleRequest request
     ) {
         UpdateArticleArgument argument = UpdateArticleArgument.of(
-                ArticleId.of(articleId), request.title(), request.content(), request.description()
+                ArticleId.of(articleId),
+                request.title(),
+                request.content(),
+                request.pureContent(),
+                request.description()
         );
         updateArticle.exec(argument);
         return ResponseEntity.ok(ArticleIdResponse.of(articleId));

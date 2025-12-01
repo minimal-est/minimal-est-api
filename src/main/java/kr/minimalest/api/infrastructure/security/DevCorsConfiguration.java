@@ -2,13 +2,15 @@ package kr.minimalest.api.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
 @Configuration
-public class LocalCorsConfiguration {
+@Profile({"default"})
+public class DevCorsConfiguration {
 
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource() {

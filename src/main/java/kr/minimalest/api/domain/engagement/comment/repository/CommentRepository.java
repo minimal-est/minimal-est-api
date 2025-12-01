@@ -49,4 +49,10 @@ public interface CommentRepository {
      * 부모 댓글이 존재하는지 확인
      */
     boolean existsById(CommentId commentId);
+
+    // 좋아요 + 1
+    void incrementLikes(CommentId comment);
+
+    // 좋아요 - 1
+    void decrementLikes(CommentId comment);
 }

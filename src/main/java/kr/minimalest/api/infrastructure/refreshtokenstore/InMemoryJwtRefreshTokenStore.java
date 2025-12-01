@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
 public class InMemoryJwtRefreshTokenStore implements RefreshTokenStore {
 
     private final Map<UserId, Token> store = new ConcurrentHashMap<>();

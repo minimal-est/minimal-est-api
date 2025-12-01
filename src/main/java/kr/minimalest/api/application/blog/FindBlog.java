@@ -6,6 +6,7 @@ import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Business
 @RequiredArgsConstructor
@@ -13,6 +14,7 @@ public class FindBlog {
 
     private final BlogRepository blogRepository;
 
+    @Transactional(readOnly = true)
     public FindBlogResult exec(FindBlogArgument argument) {
         Blog blog = blogRepository.findByPenName(PenName.of(argument.penName()))
                 .orElseThrow(() -> new BlogNotFoundException("해당 펜네임 블로그가 존재하지 않습니다: " + argument.penName()));

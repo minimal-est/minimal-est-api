@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.engagement.reaction.repository.ArticleReactionRe
 import kr.minimalest.api.domain.writing.ArticleId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 아티클 반응 통계 조회 Use Case
@@ -15,6 +16,7 @@ public class GetArticleReactionStats {
 
     private final ArticleReactionRepository reactionRepository;
 
+    @Transactional(readOnly = true)
     public GetArticleReactionStatsResult exec(GetArticleReactionStatsArgument argument) {
         var stats = reactionRepository.countActiveByArticleIdGroupByType(ArticleId.of(argument.articleId()));
         return GetArticleReactionStatsResult.of(stats);

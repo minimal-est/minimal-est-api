@@ -31,12 +31,4 @@ public class Content {
     public String value() {
         return value;
     }
-
-    public String extractPlainText() {
-        if (value == null || value.isEmpty()) {
-            return "";
-        }
-        // JSON에서 텍스트 노드만 추출 (간단한 구현)
-        return value.replaceAll("<[^>]*>", "").trim();
-    }
 }

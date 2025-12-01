@@ -6,9 +6,6 @@ import kr.minimalest.api.domain.access.Password;
 import kr.minimalest.api.domain.access.User;
 import kr.minimalest.api.domain.publishing.Blog;
 import kr.minimalest.api.domain.publishing.PenName;
-import kr.minimalest.api.domain.writing.Article;
-import kr.minimalest.api.domain.writing.Content;
-import kr.minimalest.api.domain.writing.Title;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -16,9 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Profile("default")

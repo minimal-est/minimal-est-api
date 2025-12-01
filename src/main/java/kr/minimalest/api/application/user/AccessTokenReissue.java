@@ -8,6 +8,7 @@ import kr.minimalest.api.domain.access.TokenPayload;
 import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.domain.access.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Business
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class AccessTokenReissue {
      * 리프레시 토큰을 검증하고, 새로운 엑세스 토큰을 발급합니다.
      * @throws InvalidRefreshToken
      */
+    @Transactional(readOnly = true)
     public AccessTokenReissueResult exec(AccessTokenReissueArgument argument) {
         Token refreshToken = Token.of(argument.refreshToken());
         TokenPayload payload = verifyAndGetPayload(refreshToken);
