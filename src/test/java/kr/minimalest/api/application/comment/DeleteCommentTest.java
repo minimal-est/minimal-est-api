@@ -5,7 +5,7 @@ import kr.minimalest.api.domain.engagement.comment.Comment;
 import kr.minimalest.api.domain.engagement.comment.CommentId;
 import kr.minimalest.api.domain.engagement.comment.CommentStatus;
 import kr.minimalest.api.domain.engagement.comment.exception.CommentNotFoundException;
-import kr.minimalest.api.domain.engagement.comment.exception.UnauthorizedException;
+import kr.minimalest.api.domain.engagement.comment.exception.InvalidRefreshToken;
 import kr.minimalest.api.domain.engagement.comment.repository.CommentRepository;
 import kr.minimalest.api.domain.writing.ArticleId;
 import lombok.Getter;
@@ -121,7 +121,7 @@ class DeleteCommentTest {
 
             // when & then
             assertThatThrownBy(() -> deleteComment.exec(fixture.getDeleteCommentArgumentByOtherUser()))
-                    .isInstanceOf(UnauthorizedException.class)
+                    .isInstanceOf(InvalidRefreshToken.class)
                     .hasMessage("자신의 댓글만 삭제할 수 있습니다");
 
             verify(commentRepository, times(0)).update(any(Comment.class));
