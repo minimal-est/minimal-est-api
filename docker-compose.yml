@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mysql:
+    env_file:
+      - .env
+    image: mysql:8.0.36
+    container_name: minimalest-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: minimalest
+      TZ: 'Asia/Seoul'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - mysql_data:/var/lib/mysql
+    networks:
+      - minimalest-network
+  api:
+    build:
+      context: ./minimalest-api-v2
+      dockerfile: Dockerfile
+    container_name: minimalest-api
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - minimalest-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: minimalest-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - minimalest-network
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  minimalest-network:
+    driver: bridge
+
