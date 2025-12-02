@@ -19,7 +19,7 @@ services:
       - minimalest-network
   api:
     build:
-      context: ./minimalest-api-v2
+      context: .
       dockerfile: Dockerfile
     container_name: minimalest-api
     env_file:
@@ -50,4 +50,3 @@ volumes:
 networks:
   minimalest-network:
     driver: bridge
-
