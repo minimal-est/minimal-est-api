@@ -12,6 +12,7 @@ import kr.minimalest.api.web.controller.dto.request.IssueTokenRequest;
 import kr.minimalest.api.web.exception.RefreshTokenNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -39,6 +40,12 @@ public class AuthController {
     private final Logout logout;
 
     private final String REFRESH_TOKEN = "refreshToken";
+
+    @Value("${mail.verification.redirection.verified}")
+    private String VERIFIED_REDIRECTION;
+
+    @Value("${mail.verification.redirection.failed}")
+    private String FAILED_REDIRECTION;
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
@@ -152,12 +159,12 @@ public class AuthController {
         try {
             verifyEmail.exec(new VerifyEmailArgument(email, token));
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "http://localhost:5173/auth/email-verified")
+                    .header(HttpHeaders.LOCATION, VERIFIED_REDIRECTION)
                     .build();
         } catch (Exception e) {
             log.error("이메일 인증 실패: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "http//localhost:5173/auth/verify-failed")
+                    .header(HttpHeaders.LOCATION, FAILED_REDIRECTION)
                     .build();
         }
     }

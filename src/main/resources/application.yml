@@ -24,14 +24,14 @@ spring:
       region:
         static: ${AWS_REGION:ap-northeast-2}
       credentials:
-        access-key: ${AWS_S3_ACCESS_KEY}
-        secret-key: ${AWS_S3_SECRET_ACCESS_KEY}
+        access-key: ${AWS_S3_ACCESS_KEY:12341234}
+        secret-key: ${AWS_S3_SECRET_ACCESS_KEY:12341234}
       s3:
         bucket: ${AWS_S3_BUCKET_NAME}
       ses:
         credentials:
-          access-key: ${AWS_SES_ACCESS_KEY}
-          secret-key: ${AWS_SES_SECRET_ACCESS_KEY}
+          access-key: ${AWS_SES_ACCESS_KEY:12341234}
+          secret-key: ${AWS_SES_SECRET_ACCESS_KEY:12341234}
 
 auth:
   jwt:
@@ -47,6 +47,9 @@ mail:
     link-path: ${MAIL_VERIFICATION_LINK_PATH:/api/v1/auth/verify}
     subject: ${MAIL_VERIFICATION_SUBJECT:Minimalest 이메일 인증}
     token-validity-hours: ${MAIL_VERIFICATION_TOKEN_VALIDITY_HOURS:24}
+    redirection:
+      verified: ${MAIL_VERIFICATION_REDIRECTION_VERIFIED:http://localhost:5173/auth/email-verified}
+      failed: ${MAIL_VERIFICATION_REDIRECTION_FAILED:http://localhost:5173/auth/verify-failed}
 
 redis:
   email-token-prefix: ${REDIS_EMAIL_TOKEN_PREFIX:email:verification:}
