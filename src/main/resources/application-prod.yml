@@ -13,10 +13,12 @@ logging:
   level:
     root: WARN
     kr.minimalest.api: WARN
+    kr.minimalest.api.infrastructure.runner: INFO
     org.springframework.web: WARN
     org.springframework.security: WARN
     org.hibernate: WARN
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
+
 
 
