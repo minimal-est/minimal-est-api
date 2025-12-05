@@ -44,13 +44,26 @@ public interface SpringDataJpaArticleReactionRepository extends JpaRepository<Ar
      * 특정 아티클의 반응 타입별 활성 카운트 (REACTED만)
      */
     @Query("""
-        SELECT new kr.minimalest.api.infrastructure.persistence.reaction.ReactionCountDto(ar.reactionType, COUNT(ar))
+        SELECT new kr.minimalest.api.infrastructure.persistence.reaction.ReactionCountDao(
+            ar.articleId, ar.reactionType, COUNT(ar)
+        )
         FROM ArticleReaction ar
         WHERE ar.articleId = :articleId
         AND ar.reactionState = 'REACTED'
         GROUP BY ar.reactionType
     """)
-    List<kr.minimalest.api.infrastructure.persistence.reaction.ReactionCountDto> countActiveByArticleIdGroupByType(@Param("articleId") ArticleId articleId);
+    List<ReactionCountDao> countActiveByArticleIdGroupByType(@Param("articleId") ArticleId articleId);
+
+    @Query("""
+        SELECT new kr.minimalest.api.infrastructure.persistence.reaction.ReactionCountDao(
+            ar.articleId, ar.reactionType, COUNT(ar)
+        )
+        FROM ArticleReaction ar
+        WHERE ar.articleId in :articleIds
+        AND ar.reactionState = 'REACTED'
+        GROUP BY ar.articleId, ar.reactionType
+    """)
+    List<ReactionCountDao> countActiveByArticleIdsGroupByType(@Param("articleIds") List<ArticleId> articleIds);
 
     /**
      * 사용자가 특정 아티클에 한 모든 활성 반응

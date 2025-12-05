@@ -35,6 +35,8 @@ public interface ArticleReactionRepository {
      */
     Map<ReactionType, Long> countActiveByArticleIdGroupByType(ArticleId articleId);
 
+    Map<ArticleId, Map<ReactionType, Long>> countActiveByArticleIdsGroupByType(List<ArticleId> articleIds);
+
     /**
      * 사용자가 특정 아티클에 한 모든 활성 반응 조회
      * @param articleId 아티클 ID
@@ -55,4 +57,11 @@ public interface ArticleReactionRepository {
      * @param articleReaction 삭제할 반응
      */
     void delete(ArticleReaction articleReaction);
+
+    /**
+     * ID로 반응 조회
+     * @param id 반응 ID
+     * @return 반응 (있으면), 없으면 empty
+     */
+    Optional<ArticleReaction> findById(kr.minimalest.api.domain.engagement.reaction.ArticleReactionId id);
 }

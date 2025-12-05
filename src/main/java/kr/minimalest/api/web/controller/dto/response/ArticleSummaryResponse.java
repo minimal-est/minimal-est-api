@@ -2,11 +2,11 @@ package kr.minimalest.api.web.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.minimalest.api.application.article.ArticleSummary;
-import kr.minimalest.api.application.article.AuthorInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 public record ArticleSummaryResponse(
@@ -25,7 +25,9 @@ public record ArticleSummaryResponse(
         @Schema(description = "상태")
         String status,
         @Schema(description = "저자 정보")
-        AuthorInfoResponse author
+        AuthorInfoResponse author,
+        @Schema(description = "반응 통계")
+        ReactionStatsResponse reactionStats
 ) {
     public static ArticleSummaryResponse of(ArticleSummary articleSummary) {
         return new ArticleSummaryResponse(
@@ -36,24 +38,10 @@ public record ArticleSummaryResponse(
                 articleSummary.createdAt(),
                 articleSummary.updatedAt(),
                 articleSummary.status().name(),
-                AuthorInfoResponse.of(articleSummary.authorInfo())
+                AuthorInfoResponse.of(articleSummary.authorInfo()),
+                ReactionStatsResponse.ofReactionStats(
+                        articleSummary.articleReactionStats().reactionStats()
+                )
         );
-    }
-
-    public record AuthorInfoResponse(
-            @Schema(description = "저자 ID")
-            UUID authorId,
-            @Schema(description = "필명")
-            String penName,
-            @Schema(description = "프로필 이미지 URL")
-            String profileImageUrl
-    ) {
-        public static AuthorInfoResponse of(AuthorInfo authorInfo) {
-            return new AuthorInfoResponse(
-                    authorInfo.authorId(),
-                    authorInfo.penName(),
-                    authorInfo.profileImageUrl()
-            );
-        }
     }
 }

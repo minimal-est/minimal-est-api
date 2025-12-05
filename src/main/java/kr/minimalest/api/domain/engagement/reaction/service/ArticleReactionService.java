@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.engagement.reaction.ArticleReactionId;
 import kr.minimalest.api.domain.engagement.reaction.ReactionType;
 import kr.minimalest.api.domain.writing.ArticleId;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ArticleReactionService {
@@ -17,4 +18,6 @@ public interface ArticleReactionService {
     void removeReaction(ArticleReactionId articleReactionId);
 
     Map<ReactionType, Long> getReactionCounts(ArticleId articleId);
+
+    Map<ArticleId, Map<ReactionType, Long>> getReactionCountMappings(List<ArticleId> articleIds);
 }

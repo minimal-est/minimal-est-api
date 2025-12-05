@@ -1,10 +1,11 @@
 package kr.minimalest.api.application.article;
 
+import kr.minimalest.api.domain.engagement.reaction.ReactionType;
 import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.writing.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * Application 계층 내부에서 사용
@@ -18,9 +19,10 @@ public record ArticleSummary(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         ArticleStatus status,
-        AuthorInfo authorInfo
+        AuthorInfo authorInfo,
+        ArticleReactionStats articleReactionStats
 ) {
-    public static ArticleSummary from(Article article, Author author) {
+    public static ArticleSummary from(Article article, Author author, Map<ReactionType, Long> reactionStats) {
         return new ArticleSummary(
                 article.getId(),
                 article.getTitle(),
@@ -33,7 +35,8 @@ public record ArticleSummary(
                         author.getId().id(),
                         author.getPenName().value(),
                         author.getProfile().url()
-                )
+                ),
+                new ArticleReactionStats(reactionStats)
         );
     }
 }

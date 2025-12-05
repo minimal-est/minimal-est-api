@@ -1,6 +1,7 @@
 package kr.minimalest.api.application.article;
 
 import kr.minimalest.api.application.common.annotation.Business;
+import kr.minimalest.api.domain.engagement.reaction.service.ArticleReactionService;
 import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.publishing.exception.BlogNotFoundException;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
@@ -17,6 +18,7 @@ public class FindPrevAndNextArticle {
 
     private final ArticleRepository articleRepository;
     private final BlogRepository blogRepository;
+    private final ArticleReactionService articleReactionService;
 
     /**
      * 이전, 다음 글을 조회합니다.
@@ -35,6 +37,6 @@ public class FindPrevAndNextArticle {
         Article prevArticle = articleRepository.findPrevPublishedArticle(pivotArticleId).orElse(null);
         Article nextArticle = articleRepository.findNextPublishedArticle(pivotArticleId).orElse(null);
 
-        return FindPrevAndNextArticleResult.of(prevArticle, nextArticle, author);
+        return FindPrevAndNextArticleResult.of(prevArticle, nextArticle, author, articleReactionService);
     }
 }
