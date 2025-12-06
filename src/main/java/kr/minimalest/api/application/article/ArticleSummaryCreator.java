@@ -1,5 +1,6 @@
 package kr.minimalest.api.application.article;
 
+import kr.minimalest.api.domain.discovery.tag.repository.ArticleTagRepository;
 import kr.minimalest.api.domain.engagement.reaction.ReactionType;
 import kr.minimalest.api.domain.engagement.reaction.service.ArticleReactionService;
 import kr.minimalest.api.domain.publishing.Author;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public class ArticleSummaryCreator {
 
     private final BlogService blogService;
     private final ArticleReactionService articleReactionService;
+    private final ArticleTagRepository articleTagRepository;
 
     // 도메인 -> DTO
     @Transactional(readOnly = true)
@@ -35,6 +38,7 @@ public class ArticleSummaryCreator {
 
         List<ArticleId> articleIds = articles.stream().map(Article::getId).toList();
         Map<ArticleId, Map<ReactionType, Long>> reactionCountMappings = articleReactionService.getReactionCountMappings(articleIds);
+        Map<ArticleId, List<String>> tagMappings = getTagMappingsByArticleIds(articleIds);
 
         Map<BlogId, Author> mappingAuthor = getMappingAuthorByArticles(articles);
 
@@ -42,7 +46,8 @@ public class ArticleSummaryCreator {
                 .map(a -> ArticleSummary.from(
                         a,
                         mappingAuthor.get(a.getBlogId()),
-                        reactionCountMappings.get(a.getId())
+                        reactionCountMappings.get(a.getId()),
+                        tagMappings.getOrDefault(a.getId(), List.of())
                 )).toList();
     }
 
@@ -55,6 +60,7 @@ public class ArticleSummaryCreator {
 
         List<ArticleId> articleIds = articles.stream().map(Article::getId).toList();
         Map<ArticleId, Map<ReactionType, Long>> reactionCountMappings = articleReactionService.getReactionCountMappings(articleIds);
+        Map<ArticleId, List<String>> tagMappings = getTagMappingsByArticleIds(articleIds);
 
         Map<BlogId, Author> mappingAuthor = getMappingAuthorByArticles(articles);
 
@@ -62,10 +68,23 @@ public class ArticleSummaryCreator {
                 .map(a -> ArticleSummary.from(
                         a,
                         mappingAuthor.get(a.getBlogId()),
-                        reactionCountMappings.get(a.getId())
+                        reactionCountMappings.get(a.getId()),
+                        tagMappings.getOrDefault(a.getId(), List.of())
                 )).toList();
 
         return new PageImpl<>(articleSummaries, articles.getPageable(), articles.getTotalElements());
+    }
+
+    private Map<ArticleId, List<String>> getTagMappingsByArticleIds(List<ArticleId> articleIds) {
+        Map<ArticleId, List<String>> tagMappings = new HashMap<>();
+
+        // 각 글의 태그 이름 조회
+        articleIds.forEach(articleId -> {
+            List<String> tagNames = articleTagRepository.findTagNamesByArticleId(articleId);
+            tagMappings.put(articleId, tagNames);
+        });
+
+        return tagMappings;
     }
 
     private Map<BlogId, Author> getMappingAuthorByArticles(Iterable<Article> articles) {

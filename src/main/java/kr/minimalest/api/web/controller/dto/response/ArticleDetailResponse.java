@@ -4,6 +4,7 @@ import kr.minimalest.api.application.article.ArticleDetail;
 import kr.minimalest.api.domain.writing.ArticleStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record ArticleDetailResponse(
@@ -15,7 +16,8 @@ public record ArticleDetailResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime publishedAt,
-        AuthorResponse author
+        AuthorResponse author,
+        List<TagResponse> tags
 ) {
     public static ArticleDetailResponse of(ArticleDetail articleDetail) {
         return new ArticleDetailResponse(
@@ -31,7 +33,10 @@ public record ArticleDetailResponse(
                         articleDetail.author().getUserId().id(),
                         articleDetail.author().getPenName().value(),
                         articleDetail.author().getProfile().url()
-                )
+                ),
+                articleDetail.tagNames().stream()
+                        .map(tagName -> TagResponse.of(null, tagName))
+                        .toList()
         );
     }
 

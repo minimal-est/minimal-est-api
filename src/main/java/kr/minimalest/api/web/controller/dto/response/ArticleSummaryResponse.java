@@ -5,8 +5,8 @@ import kr.minimalest.api.application.article.ArticleSummary;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 public record ArticleSummaryResponse(
@@ -27,7 +27,9 @@ public record ArticleSummaryResponse(
         @Schema(description = "저자 정보")
         AuthorInfoResponse author,
         @Schema(description = "반응 통계")
-        ReactionStatsResponse reactionStats
+        ReactionStatsResponse reactionStats,
+        @Schema(description = "태그 목록")
+        List<TagResponse> tags
 ) {
     public static ArticleSummaryResponse of(ArticleSummary articleSummary) {
         return new ArticleSummaryResponse(
@@ -41,7 +43,10 @@ public record ArticleSummaryResponse(
                 AuthorInfoResponse.of(articleSummary.authorInfo()),
                 ReactionStatsResponse.ofReactionStats(
                         articleSummary.articleReactionStats().reactionStats()
-                )
+                ),
+                articleSummary.tagNames().stream()
+                        .map(name -> TagResponse.of(null, name))
+                        .toList()
         );
     }
 }

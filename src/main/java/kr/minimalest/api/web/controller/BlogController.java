@@ -142,7 +142,8 @@ public class BlogController {
                 request.title(),
                 request.content(),
                 request.pureContent(),
-                request.description()
+                request.description(),
+                request.tags()
         );
         updateArticle.exec(argument);
         return ResponseEntity.ok(ArticleIdResponse.of(articleId));

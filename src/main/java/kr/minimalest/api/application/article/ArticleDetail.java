@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.writing.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Application 계층 내부에서 사용
@@ -18,9 +19,10 @@ public record ArticleDetail(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime publishedAt,
-        Author author
+        Author author,
+        List<String> tagNames
 ) {
-    public static ArticleDetail from(Article article, Author author) {
+    public static ArticleDetail from(Article article, Author author, List<String> tagNames) {
         return new ArticleDetail(
                 article.getId(),
                 article.getTitle(),
@@ -30,7 +32,12 @@ public record ArticleDetail(
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
                 article.getPublishedAt(),
-                author
+                author,
+                tagNames
         );
+    }
+
+    public static ArticleDetail from(Article article, Author author) {
+        return from(article, author, List.of());
     }
 }

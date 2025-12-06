@@ -1,6 +1,7 @@
 package kr.minimalest.api.application.article;
 
 import kr.minimalest.api.application.common.annotation.Business;
+import kr.minimalest.api.domain.discovery.tag.repository.ArticleTagRepository;
 import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.publishing.exception.AuthorNotFoundException;
@@ -13,12 +14,15 @@ import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Business
 @RequiredArgsConstructor
 public class FindSingleArticle {
 
     private final ArticleRepository articleRepository;
     private final BlogService blogService;
+    private final ArticleTagRepository articleTagRepository;
 
     @Transactional(readOnly = true)
     public FindSingleArticleResult exec(FindSingleArticleArgument argument) {
@@ -36,8 +40,11 @@ public class FindSingleArticle {
             throw new ArticleAccessDeniedException("해당 블로그의 글이 아닙니다");
         }
 
+        // 태그 이름 조회
+        List<String> tagNames = articleTagRepository.findTagNamesByArticleId(articleId);
+
         return new FindSingleArticleResult(
-                ArticleDetail.from(article, author)
+                ArticleDetail.from(article, author, tagNames)
         );
     }
 }

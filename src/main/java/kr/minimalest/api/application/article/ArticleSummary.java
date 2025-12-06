@@ -5,6 +5,7 @@ import kr.minimalest.api.domain.publishing.Author;
 import kr.minimalest.api.domain.writing.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,9 +21,10 @@ public record ArticleSummary(
         LocalDateTime updatedAt,
         ArticleStatus status,
         AuthorInfo authorInfo,
-        ArticleReactionStats articleReactionStats
+        ArticleReactionStats articleReactionStats,
+        List<String> tagNames
 ) {
-    public static ArticleSummary from(Article article, Author author, Map<ReactionType, Long> reactionStats) {
+    public static ArticleSummary from(Article article, Author author, Map<ReactionType, Long> reactionStats, List<String> tagNames) {
         return new ArticleSummary(
                 article.getId(),
                 article.getTitle(),
@@ -36,7 +38,12 @@ public record ArticleSummary(
                         author.getPenName().value(),
                         author.getProfile().url()
                 ),
-                new ArticleReactionStats(reactionStats)
+                new ArticleReactionStats(reactionStats),
+                tagNames
         );
+    }
+
+    public static ArticleSummary from(Article article, Author author, Map<ReactionType, Long> reactionStats) {
+        return from(article, author, reactionStats, List.of());
     }
 }
