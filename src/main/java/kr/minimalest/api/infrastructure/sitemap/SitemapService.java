@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class SitemapService {
 
                     return new SitemapEntry(
                             url,
-                            article.getUpdatedAt(),
+                            article.getPublishedAt(),
                             "weekly",
                             "0.8"
                     );
@@ -57,12 +58,14 @@ public class SitemapService {
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         xml.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
         for (SitemapEntry entry : entries) {
+            String lastmod = entry.lastModified()
+                            .toLocalDate()
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE);
+
             xml.append("  <url>\n");
             xml.append("    <loc>").append(escapeXml(entry.url())).append("</loc>\n");
-            xml.append("    <lastmod>").append(entry.lastModified().format(formatter)).append("</lastmod>\n");
+            xml.append("    <lastmod>").append(lastmod).append("</lastmod>\n");
             xml.append("  </url>\n");
         }
 
