@@ -20,5 +20,6 @@ logging:
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
 
-
+app:
+  base-url: https://minimalest.kr
 

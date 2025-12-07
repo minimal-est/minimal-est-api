@@ -37,6 +37,7 @@ public class PublishArticle {
         } catch (IllegalArgumentException e) {
             throw new ArticleCompleteFailException(e.getMessage(), e);
         } catch (Exception e) {
+            log.error("", e);
             throw new ArticleCompleteFailException("글 완료 처리 중 오류가 발생했습니다.", e);
         }
     }

@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.Slug;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     @Override
     public Optional<Article> findById(ArticleId articleId) {
         return springDataJpaArticleRepository.findById(articleId);
+    }
+
+    @Override
+    public Optional<Article> findBySlug(Slug slug) {
+        return springDataJpaArticleRepository.findBySlug(slug);
     }
 
     @Override
@@ -82,5 +88,10 @@ public class ArticleRepositoryImpl implements ArticleRepository {
             return springDataJpaArticleRepository.findAllByBlogIdAndStatusNotOrderByUpdatedAtDesc(
                     blogId, ArticleStatus.DELETED, pageable);
         }
+    }
+
+    @Override
+    public List<Article> findAllPublished() {
+        return springDataJpaArticleRepository.findAllByStatus(ArticleStatus.PUBLISHED);
     }
 }

@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public record ArticleSummary(
         ArticleId articleId,
+        Slug slug,
         Title title,
         Description description,
         LocalDateTime publishedAt,
@@ -27,6 +28,7 @@ public record ArticleSummary(
     public static ArticleSummary from(Article article, Author author, Map<ReactionType, Long> reactionStats, List<String> tagNames) {
         return new ArticleSummary(
                 article.getId(),
+                article.getSlug(),
                 article.getTitle(),
                 article.getDescription(),
                 article.getPublishedAt(),

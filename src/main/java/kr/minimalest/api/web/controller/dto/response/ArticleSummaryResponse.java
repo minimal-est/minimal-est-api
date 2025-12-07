@@ -12,6 +12,8 @@ import java.util.UUID;
 public record ArticleSummaryResponse(
         @Schema(description = "아티클 ID")
         UUID articleId,
+        @Schema(description = "Slug")
+        String slug,
         @Schema(description = "제목")
         String title,
         @Schema(description = "설명")
@@ -34,6 +36,7 @@ public record ArticleSummaryResponse(
     public static ArticleSummaryResponse of(ArticleSummary articleSummary) {
         return new ArticleSummaryResponse(
                 articleSummary.articleId().id(),
+                articleSummary.slug() != null ? articleSummary.slug().value() : null,
                 articleSummary.title() != null ? articleSummary.title().value() : "",
                 articleSummary.description() != null ? articleSummary.description().value() : "",
                 articleSummary.publishedAt(),

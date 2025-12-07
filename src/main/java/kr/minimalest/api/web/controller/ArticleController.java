@@ -31,6 +31,7 @@ public class ArticleController {
 
     private final FindRecommendArticles findRecommendArticles;
     private final FindPrevAndNextArticle findPrevAndNextArticle;
+    private final FindArticleBySlug findArticleBySlug;
     private final AddOrToggleReactionToArticle addOrToggleReactionToArticle;
     private final GetArticleReactionStats getArticleReactionStats;
     private final GetMyReactionsFromArticle getMyReactionsFromArticle;

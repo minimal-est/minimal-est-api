@@ -14,6 +14,7 @@ import kr.minimalest.api.web.controller.dto.request.CreateBlogRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateArticleRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateProfileRequest;
 import kr.minimalest.api.web.controller.dto.response.*;
+import kr.minimalest.api.web.exception.WebException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -46,6 +48,7 @@ public class BlogController {
 
     private final FindSingleArticle findSingleArticle;
     private final FindMyArticles findMyArticles;
+    private final FindArticleBySlug findArticleBySlug;
 
     /**
      * 현재 로그인한 사용자의 블로그 정보를 조회합니다.
@@ -81,14 +84,34 @@ public class BlogController {
     }
 
     @GetMapping("{penName}/articles/{articleId}/details")
-    @Operation(summary = "아티클 상세 조회", description = "펜네임과 아티클 ID를 사용해 아티클 상세 정보를 조회합니다.")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "내 아티클 상세 조회 (DRAFT용)", description = "본인의 아티클을 상세 조회합니다. DRAFT 상태 글 미리보기에 사용됩니다. (인증 필요)")
     public ResponseEntity<ArticleDetailResponse> findArticleDetails(
-        @PathVariable("penName") String penNameStr,
-        @PathVariable("articleId") UUID articleId
+        @PathVariable String penName,
+        @PathVariable UUID articleId,
+        @AuthenticationPrincipal JwtUserDetails jwtUserDetails
     ) {
-        log.info("{}, {} 아티클 조회", penNameStr, articleId);
-        FindSingleArticleArgument argument = new FindSingleArticleArgument(penNameStr, articleId);
+        log.info("penName: {}, articleId: {} 아티클 조회 (DRAFT)", penName, articleId);
+        FindSingleArticleArgument argument = new FindSingleArticleArgument(penName, articleId);
         FindSingleArticleResult result = findSingleArticle.exec(argument);
+
+        return ResponseEntity.ok(ArticleDetailResponse.of(result.articleDetail()));
+    }
+
+    @GetMapping("{penName}/articles/by-slug/{slug}/details")
+    @Operation(summary = "아티클 상세 조회 (Slug)", description = "펜네임과 slug를 사용해 아티클 상세 정보를 조회합니다. (공개 페이지용)")
+    public ResponseEntity<ArticleDetailResponse> findArticleBySlug(
+        @PathVariable("penName") String penName,
+        @PathVariable("slug") String slug
+    ) {
+        final int SLUG_MIN_LEN = 9;
+        if (!StringUtils.hasText(slug) || slug.length() <= SLUG_MIN_LEN) {
+            throw new WebException("올바른 slug가 아닙니다.", 400);
+        }
+
+        log.info("펜네임: {}, Slug: {} 아티클 조회", penName, slug);
+        FindArticleBySlugArgument argument = FindArticleBySlugArgument.of(penName, slug);
+        FindArticleBySlugResult result = findArticleBySlug.exec(argument);
 
         return ResponseEntity.ok(ArticleDetailResponse.of(result.articleDetail()));
     }

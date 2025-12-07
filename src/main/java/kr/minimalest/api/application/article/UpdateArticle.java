@@ -29,7 +29,7 @@ public class UpdateArticle {
         Article article = findArticle(arg.articleId());
         Title title = Title.of(arg.title());
         Content content = Content.of(arg.content());
-        Content pureContent = Content.of(arg.content());
+        Content pureContent = Content.of(arg.pureContent());
         Description description = new Description(arg.description());
 
         updateArticleAndPublishEvent(article, title, content, pureContent, description);

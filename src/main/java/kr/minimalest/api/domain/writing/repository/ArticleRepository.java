@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.Slug;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,6 +16,8 @@ public interface ArticleRepository {
     ArticleId save(Article article);
 
     Optional<Article> findById(ArticleId articleId);
+
+    Optional<Article> findBySlug(Slug slug);
 
     Optional<Article> findNextPublishedArticle(ArticleId articleId);
 
@@ -29,4 +32,6 @@ public interface ArticleRepository {
     Page<Article> findAllCompletedByBlogId(BlogId blogId, Pageable pageable);
 
     Page<Article> findAllMyArticles(BlogId blogId, ArticleStatus status, String searchKeyword, Pageable pageable);
+
+    List<Article> findAllPublished();
 }

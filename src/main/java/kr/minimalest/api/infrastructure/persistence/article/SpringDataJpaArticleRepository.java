@@ -4,6 +4,7 @@ import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.Article;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.ArticleStatus;
+import kr.minimalest.api.domain.writing.Slug;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface SpringDataJpaArticleRepository extends JpaRepository<Article, ArticleId> {
 
+    Optional<Article> findBySlug(Slug slug);
+
     @Query("SELECT a FROM Article a")
     List<Article> findTopN(Pageable pageable);
 
@@ -23,6 +26,8 @@ public interface SpringDataJpaArticleRepository extends JpaRepository<Article, A
     List<ArticleId> findPublishedTopNIds(Pageable pageable);
 
     Page<Article> findAllByStatusAndBlogId(ArticleStatus status, BlogId blogId, Pageable pageable);
+
+    List<Article> findAllByStatus(ArticleStatus status);
 
     Page<Article> findAllByBlogIdAndStatusNotOrderByUpdatedAtDesc(BlogId blogId, ArticleStatus status, Pageable pageable);
 

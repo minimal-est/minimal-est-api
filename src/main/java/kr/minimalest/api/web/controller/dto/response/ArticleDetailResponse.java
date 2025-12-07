@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public record ArticleDetailResponse(
         UUID articleId,
+        String slug,
         String title,
         String content,
         String description,
@@ -22,6 +23,7 @@ public record ArticleDetailResponse(
     public static ArticleDetailResponse of(ArticleDetail articleDetail) {
         return new ArticleDetailResponse(
                 articleDetail.articleId().id(),
+                articleDetail.slug() != null ? articleDetail.slug().value() : null,
                 articleDetail.title().value(),
                 articleDetail.content().value(),
                 articleDetail.description().value(),

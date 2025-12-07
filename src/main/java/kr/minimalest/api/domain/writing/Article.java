@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -84,6 +85,13 @@ public class Article extends AggregateRoot {
     @Column(nullable = true)
     private LocalDateTime deletedAt; // 삭제 시간
 
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "slug", nullable = true, unique = true, length = 255)
+    )
+    private Slug slug; // 제목-UUID8자리
+
     public UUID getRawId() {
         return id.id();
     }
@@ -94,8 +102,9 @@ public class Article extends AggregateRoot {
     }
 
     public static Article create(BlogId blogId) {
+        ArticleId articleId = ArticleId.generate();
         Article article = new Article(
-                ArticleId.generate(),
+                articleId,
                 blogId,
                 Title.empty(),
                 Content.empty(),
@@ -105,6 +114,7 @@ public class Article extends AggregateRoot {
                 Visibility.PRIVATE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 null,
                 null
         );
@@ -135,6 +145,11 @@ public class Article extends AggregateRoot {
             throw new IllegalStateException("발행할 수 없는 상태입니다.");
         }
         validateForPublish();
+
+        if (slug == null || slug.value().isEmpty()) {
+            this.slug = Slug.of(title.value(), this.id.id());
+        }
+
         this.status = ArticleStatus.PUBLISHED;
         this.publishedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -168,7 +183,6 @@ public class Article extends AggregateRoot {
 
     private void validateContent() {
         int length = pureContent.length();
-        log.info("{}", length);
         if (length > 30_000) {
             throw new IllegalArgumentException("본문은 3만자를 초과할 수 없습니다.");
         }

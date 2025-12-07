@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/auth/verify").permitAll()
                         .requestMatchers(POST, "/api/v1/auth/token/refresh").permitAll()
 
+                        .requestMatchers(GET, "/api/v1/articles/sitemap.xml").permitAll()
+
                         .requestMatchers(GET, "/api/v1/articles/**").permitAll()
                         .requestMatchers(POST, "/api/v1/articles/*/comments/guest").permitAll()
                         .requestMatchers(DELETE, "/api/v1/articles/*/comments/*/guest").permitAll()

@@ -12,6 +12,7 @@ import java.util.List;
  */
 public record ArticleDetail(
         ArticleId articleId,
+        Slug slug,
         Title title,
         Content content,
         Description description,
@@ -25,6 +26,7 @@ public record ArticleDetail(
     public static ArticleDetail from(Article article, Author author, List<String> tagNames) {
         return new ArticleDetail(
                 article.getId(),
+                article.getSlug(),
                 article.getTitle(),
                 article.getContent(),
                 article.getDescription(),
