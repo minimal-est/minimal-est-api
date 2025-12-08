@@ -2,6 +2,7 @@ package kr.minimalest.api.application.authorization;
 
 import kr.minimalest.api.domain.access.UserId;
 import kr.minimalest.api.domain.publishing.BlogId;
+import kr.minimalest.api.domain.publishing.PenName;
 import kr.minimalest.api.domain.publishing.repository.BlogRepository;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.domain.writing.repository.ArticleRepository;
@@ -19,6 +20,13 @@ public class AuthorizationService {
     @Transactional(readOnly = true)
     public boolean userOwnsBlog(BlogId blogId, UserId userId) {
         return blogRepository.findById(blogId)
+                .map(blog -> blog.isOwnedBy(userId))
+                .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean userOwnsBlogByPenName(PenName penName, UserId userId) {
+        return blogRepository.findByPenName(penName)
                 .map(blog -> blog.isOwnedBy(userId))
                 .orElse(false);
     }

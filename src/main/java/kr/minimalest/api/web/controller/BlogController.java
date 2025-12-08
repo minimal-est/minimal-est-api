@@ -11,6 +11,7 @@ import kr.minimalest.api.domain.publishing.BlogId;
 import kr.minimalest.api.domain.writing.ArticleId;
 import kr.minimalest.api.infrastructure.security.JwtUserDetails;
 import kr.minimalest.api.web.controller.dto.request.CreateBlogRequest;
+import kr.minimalest.api.web.controller.dto.request.UpdateAboutRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateArticleRequest;
 import kr.minimalest.api.web.controller.dto.request.UpdateProfileRequest;
 import kr.minimalest.api.web.controller.dto.response.*;
@@ -36,9 +37,11 @@ import java.util.UUID;
 public class BlogController {
 
     private final FindBlog findBlog;
+    private final FindBlogDetails findBlogDetails;
     private final FindBlogSelf findBlogSelf;
     private final CreateBlog createBlog;
     private final UpdateAuthorProfile updateAuthorProfile;
+    private final UpdateAbout updateAbout;
     private final FindProfileImageUrl findProfileImageUrl;
 
     private final CreateArticle createArticle;
@@ -49,6 +52,7 @@ public class BlogController {
     private final FindSingleArticle findSingleArticle;
     private final FindMyArticles findMyArticles;
     private final FindArticleBySlug findArticleBySlug;
+    private final FindPublishedArticlesByPenName findPublishedArticlesByPenName;
 
     /**
      * 현재 로그인한 사용자의 블로그 정보를 조회합니다.
@@ -75,12 +79,24 @@ public class BlogController {
      */
     @GetMapping("{penName}")
     @Operation(summary = "펜네임으로 블로그 조회", description = "펜네임을 사용해 특정 블로그 정보를 조회합니다.")
-    public ResponseEntity<BlogInfoResponse> findBlog(
+    public ResponseEntity<BlogDetailsResponse> findBlog(
             @PathVariable String penName
     ) {
-        FindBlogArgument argument = new FindBlogArgument(penName);
-        FindBlogResult result = findBlog.exec(argument);
-        return ResponseEntity.ok(BlogInfoResponse.of(result.blogInfo()));
+        FindBlogDetailsArgument argument = new FindBlogDetailsArgument(penName);
+        FindBlogDetailsResult result = findBlogDetails.exec(argument);
+        return ResponseEntity.ok(BlogDetailsResponse.of(result.blogDetails()));
+    }
+
+    @PatchMapping("{penName}/about")
+    @PreAuthorize("@authorizationService.userOwnsBlogByPenName(#penName, #jwtUserDetails.userId)")
+    @Operation(summary = "About 수정", description = "블로그의 About을 수정합니다. (본인의 블로그만 가능)")
+    public ResponseEntity<?> updateAbout(
+            @PathVariable String penName,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
+            @RequestBody UpdateAboutRequest updateAboutRequest
+    ) {
+        updateAbout.exec(penName, updateAboutRequest.about());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{penName}/articles/{articleId}/details")
@@ -211,6 +227,34 @@ public class BlogController {
         FindMyArticlesArgument argument = new FindMyArticlesArgument(blogId, statusParam, searchKeyword, pageable);
         FindMyArticlesResult result = findMyArticles.exec(argument);
         ArticleSummaryPageResponse response = ArticleSummaryPageResponse.of(result.articles());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 특정 블로그의 발행된 글 목록 조회 (공개)
+     */
+    @GetMapping("{penName}/articles")
+    @Operation(summary = "블로그 글 목록 조회", description = "펜네임으로 특정 블로그의 발행된 글 목록을 최신순으로 조회합니다. (인증 불필요)")
+    public ResponseEntity<ArticleSummaryPageResponse> findArticlesByPenName(
+            @PathVariable String penName,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        if (page == null) page = 0;
+        if (size == null) size = 10;
+
+        FindPublishedArticlesByPenName.FindPublishedArticlesByPenNameArgument argument =
+                FindPublishedArticlesByPenName.FindPublishedArticlesByPenNameArgument.of(penName, page, size);
+        FindPublishedArticlesByPenName.FindPublishedArticlesByPenNameResult result =
+                findPublishedArticlesByPenName.exec(argument);
+
+        ArticleSummaryPageResponse response = ArticleSummaryPageResponse.of(
+                result.articles(),
+                result.totalElements(),
+                result.currentPage(),
+                result.pageSize()
+        );
+
         return ResponseEntity.ok(response);
     }
 

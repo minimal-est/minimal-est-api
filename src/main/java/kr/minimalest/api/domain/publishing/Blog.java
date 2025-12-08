@@ -27,6 +27,13 @@ public class Blog extends AggregateRoot {
     @JoinColumn(name = "author_id")
     private Author author;
 
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "about", columnDefinition = "TEXT")
+    )
+    private About about;
+
     private LocalDateTime createdAt;
 
     public PenName getPenName() {
@@ -40,6 +47,7 @@ public class Blog extends AggregateRoot {
     public static Blog create(UserId ownerId, PenName authorPenName) {
         Blog blog = new Blog();
         blog.id = BlogId.generate();
+        blog.about = About.empty();
 
         // author validation도 함께 진행합니다.
         blog.author = Author.create(ownerId, authorPenName);
@@ -56,5 +64,9 @@ public class Blog extends AggregateRoot {
 
     public String getProfileImageUrl() {
         return author.getProfile().url();
+    }
+
+    public void updateAbout(String text) {
+        about = new About(text);
     }
 }

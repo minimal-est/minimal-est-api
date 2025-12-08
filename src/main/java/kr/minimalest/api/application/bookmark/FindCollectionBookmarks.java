@@ -47,7 +47,7 @@ public class FindCollectionBookmarks {
                             .orElseThrow(() -> new IllegalArgumentException("아티클을 찾을 수 없습니다"));
                     Blog blog = blogRepository.findById(article.getBlogId())
                             .orElseThrow(() -> new IllegalArgumentException("블로그를 찾을 수 없습니다"));
-                    return BookmarkDetail.from(bookmark, article.getTitle().value(), blog.getPenName().value());
+                    return BookmarkDetail.from(bookmark, article, blog);
                 })
                 .toList();
 

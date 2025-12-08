@@ -154,17 +154,17 @@ public class BookmarkController {
      * 글 저장 (북마크 추가)
      */
     @Operation(summary = "글을 컬렉션에 저장", description = "특정 글을 북마크 컬렉션에 저장합니다")
-    @PostMapping("/collections/{collectionId}/articles/{articleId}")
+    @PostMapping("/collections/{collectionId}/articles/{slug}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BookmarkResponse> addBookmark(
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
             @PathVariable UUID collectionId,
-            @PathVariable UUID articleId
+            @PathVariable String slug
     ) {
         AddBookmark.AddBookmarkArgument argument = new AddBookmark.AddBookmarkArgument(
                 jwtUserDetails.getUserId(),
                 BookmarkCollectionId.of(collectionId),
-                ArticleId.of(articleId)
+                slug
         );
         BookmarkDetail result = addBookmark.exec(argument);
         return ResponseEntity.status(HttpStatus.CREATED).body(BookmarkResponse.of(result));

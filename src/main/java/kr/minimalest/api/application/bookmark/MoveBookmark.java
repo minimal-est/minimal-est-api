@@ -78,7 +78,7 @@ public class MoveBookmark {
         Blog blog = blogRepository.findById(article.getBlogId())
                 .orElseThrow(() -> new IllegalArgumentException("블로그를 찾을 수 없습니다"));
 
-        return BookmarkDetail.from(bookmark, article.getTitle().value(), blog.getPenName().value());
+        return BookmarkDetail.from(bookmark, article, blog);
     }
 
     public record MoveBookmarkArgument(
