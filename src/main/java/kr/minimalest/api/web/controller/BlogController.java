@@ -281,7 +281,7 @@ public class BlogController {
     /**
      * 프로필 이미지 URL 조회
      */
-    @GetMapping("{blogId}/profile")
+    @GetMapping("{blogId}/profile/image")
     @Operation(summary = "프로필 이미지 URL 조회", description = "해당 블로그의 작가 프로필 URL을 조회합니다.")
     public ResponseEntity<FindProfileImageUrlResponse> findProfile(
             @PathVariable UUID blogId
@@ -294,7 +294,7 @@ public class BlogController {
      * 프로필 이미지 URL 저장
      * S3에 업로드된 후 받은 URL을 저장합니다.
      */
-    @PutMapping("{blogId}/profile")
+    @PutMapping("{blogId}/profile/image")
     @PreAuthorize("isAuthenticated() && @authorizationService.userOwnsBlog(#blogId, #jwtUserDetails.userId)")
     @Operation(
             summary = "프로필 이미지 URL 저장",

@@ -10,6 +10,6 @@ public record Profile(
 ) {
 
     public static Profile random(UUID seed) {
-        return new Profile("https://api.dicebear.com/9.x/pixel-art-neutral/svg?seed=" + seed);
+        return new Profile("https://api.dicebear.com/9.x/thumbs/svg?" + seed);
     }
 }
