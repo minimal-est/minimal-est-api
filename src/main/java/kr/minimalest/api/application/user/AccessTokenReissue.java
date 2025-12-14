@@ -18,19 +18,28 @@ public class AccessTokenReissue {
     private final RefreshTokenStore refreshTokenStore;
 
     /**
-     * 리프레시 토큰을 검증하고, 새로운 엑세스 토큰을 발급합니다.
+     * 리프레시 토큰을 검증하고, 새로운 엑세스 토큰과 리프레시 토큰을 발급합니다. (RTR - Refresh Token Rotation)
      * @throws InvalidRefreshToken
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public AccessTokenReissueResult exec(AccessTokenReissueArgument argument) {
         Token refreshToken = Token.of(argument.refreshToken());
         TokenPayload payload = verifyAndGetPayload(refreshToken);
 
         validateRefreshTokenInStore(payload.userId(), refreshToken);
 
-        Token issuedAccessToken = tokenProvider.generateAccessToken(payload.userId(), payload.roleTypes());
+        // 새 Access Token과 Refresh Token 발급 (RTR)
+        Token newAccessToken = tokenProvider.generateAccessToken(payload.userId(), payload.roleTypes());
+        Token newRefreshToken = tokenProvider.generateRefreshToken(payload.userId(), payload.roleTypes());
 
-        return AccessTokenReissueResult.of(issuedAccessToken);
+        // Redis에 새 Refresh Token 저장 (기존 것은 덮어씌워짐)
+        refreshTokenStore.put(payload.userId(), newRefreshToken);
+
+        return AccessTokenReissueResult.of(
+                newAccessToken,
+                newRefreshToken,
+                tokenProvider.getRefreshValidityInMills()
+        );
     }
 
     private TokenPayload verifyAndGetPayload(Token refreshToken) {

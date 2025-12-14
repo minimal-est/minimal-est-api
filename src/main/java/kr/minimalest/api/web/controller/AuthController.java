@@ -91,7 +91,7 @@ public class AuthController {
     // jwt filter는 access token만 검사합니다.
     // 그러므로 refresh token을 이용한 재발급 요청은 인증이 필요없습니다.
     @PostMapping("/token/refresh")
-    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 사용해 새로운 액세스 토큰을 발급합니다.")
+    @Operation(summary = "액세스 토큰 및 리프레시 토큰 재발급", description = "리프레시 토큰을 사용해 새로운 액세스 토큰과 리프레시 토큰을 발급합니다. (RTR)")
     public ResponseEntity<AccessTokenResponse> refreshToken(
         @CookieValue(name = "refreshToken", required = false) String refreshToken
     ) {
@@ -103,7 +103,18 @@ public class AuthController {
                 AccessTokenReissueArgument.of(refreshToken)
         );
 
+        // RTR: 새 Refresh Token을 쿠키에 설정
+        ResponseCookie newRefreshTokenCookie = ResponseCookie
+                .from(REFRESH_TOKEN, accessTokenReissueResult.newRefreshToken().value())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(accessTokenReissueResult.refreshTokenValidityInMills().toSeconds())
+                .sameSite("lax")
+                .build();
+
         return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, newRefreshTokenCookie.toString())
                 .body(AccessTokenResponse.of(accessTokenReissueResult.accessToken().value()));
     }
 
